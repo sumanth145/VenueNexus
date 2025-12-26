@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: content(~{::section})}">
+
+<head>
+    <title>Add Venue</title>
+</head>
+
+<body>
+    <section class="fade-in">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow border-0">
+                    <div class="card-header bg-primary text-white py-3">
+                        <h4 class="mb-0 fw-bold">Add New Venue</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/venues/add}" th:object="${venue}" method="post">
+                            <input type="hidden" th:field="*{venueId}" />
+                            <div class="mb-3">
+                                <label for="venueName" class="form-label fw-bold">Venue Name</label>
+                                <input type="text" class="form-control" id="venueName" th:field="*{venueName}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="location" class="form-label fw-bold">Location</label>
+                                <input type="text" class="form-control" id="location" th:field="*{location}" required>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="capacity" class="form-label fw-bold">Capacity</label>
+                                    <input type="number" class="form-control" id="capacity" th:field="*{capacity}"
+                                        required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="pricePerDay" class="form-label fw-bold">Price Per Day ($)</label>
+                                    <input type="number" step="0.01" class="form-control" id="pricePerDay"
+                                        th:field="*{pricePerDay}" required>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end mt-4">
+                                <a href="/venues" class="btn btn-light me-2">Cancel</a>
+                                <button type="submit" class="btn btn-primary px-4 fw-bold">Save Venue</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>
