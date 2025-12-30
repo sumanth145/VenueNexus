@@ -21,7 +21,10 @@ public class Venue {
     private double pricePerDay;
 
     @Column(nullable = false)
-    private String status; // AVAILABLE, BOOKED, MAINTENANCE
+    private String status="AVAILABLE"; // AVAILABLE, BOOKED, MAINTENANCE
+
+    @Column(name = "image_path")
+    private String imagePath;
 
     public Venue() {
     }
@@ -81,5 +84,13 @@ public class Venue {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }

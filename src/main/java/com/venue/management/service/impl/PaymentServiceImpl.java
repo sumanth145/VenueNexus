@@ -23,10 +23,17 @@ public class PaymentServiceImpl implements PaymentService {
     public Payment processPayment(Payment payment) {
         Booking booking = bookingRepository.findById(payment.getBooking().getBookingId()).orElseThrow();
         
+        // Calculate total amount based on number of days
+        long days = java.time.temporal.ChronoUnit.DAYS.between(
+            booking.getEventDate(), 
+            booking.getEndDate()
+        ) + 1; // +1 to include both start and end dates
+        double totalAmount = booking.getVenue().getPricePerDay() * days;
+        
         // Simulate payment success
         payment.setPaymentDate(LocalDateTime.now());
         payment.setPaymentStatus("SUCCESS");
-        payment.setPaymentAmount(booking.getVenue().getPricePerDay());
+        payment.setPaymentAmount(totalAmount);
         
         // Update booking status
         booking.setStatus("CONFIRMED");

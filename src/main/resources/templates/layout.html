@@ -14,7 +14,9 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <style>
         /* Airbnb Layout Specifics overrides */
         body {
@@ -65,14 +67,14 @@
     <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
         <div class="container-fluid px-5">
             <!-- Brand -->
-            <a class="navbar-brand d-flex align-items-center" href="/">
+            <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
                 <i class="fas fa-calendar-check fa-1x me-2 text-primary-color"
-                    style="font-size: 2rem; color: var(--primary-color);"></i>
-                <span style="color: var(--primary-color); font-weight: 700; letter-spacing: -1px;">EVM</span>
+                    style="font-size: 3rem; color: var(--primary-color);"></i>
+                <span style="color: var(--primary-color); font-weight: 700; letter-spacing: -1px;">Event Venue Management</span>
             </a>
 
             <!-- Search Bar (Center) -->
-            <div class="d-none d-md-block mx-auto">
+            <!-- <div class="d-none d-md-block mx-auto">
                 <div class="input-group rounded-pill shadow-sm hover-shadow transition-all"
                     style="border: 1px solid #ddd; padding: 4px 4px 4px 20px; width: 400px; cursor: pointer;">
                     <span class="d-flex align-items-center text-dark fw-bold" style="font-size: 0.9rem;">Anywhere</span>
@@ -86,16 +88,11 @@
                         <i class="fas fa-search text-white" style="font-size: 0.8rem;"></i>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <!-- User Menu (Right) -->
             <div class="d-flex align-items-center gap-3">
-                <a href="#"
-                    class="btn btn-sm text-dark fw-bold rounded-pill px-3 py-2 btn-hover-light d-none d-md-block">Switch
-                    to hosting</a>
-                <button class="btn btn-sm btn-hover-light rounded-circle p-2">
-                    <i class="fas fa-globe"></i>
-                </button>
+                
 
                 <!-- Authenticated User Dropdown -->
                 <div class="dropdown" sec:authorize="isAuthenticated()">
@@ -117,10 +114,10 @@
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item py-2 fw-semibold" href="/dashboard">Dashboard</a></li>
-                        <li><a class="dropdown-item py-2" href="/venues">Browse Venues</a></li>
-                        <li><a class="dropdown-item py-2" href="/bookings">My Trips</a></li>
-                        <li><a class="dropdown-item py-2" href="/support">Help Center</a></li>
+                        <li><a class="dropdown-item py-2 fw-semibold" th:href="@{/dashboard}">Dashboard</a></li>
+                        <li><a class="dropdown-item py-2" th:href="@{/venues}">Browse Venues</a></li>
+                        <li><a class="dropdown-item py-2" th:href="@{/bookings}">My Bookings</a></li>
+                        <li><a class="dropdown-item py-2" th:href="@{/support}">Support Desk</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -145,8 +142,8 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 py-2"
                         style="border-radius: 12px; min-width: 240px;">
-                        <li><a class="dropdown-item py-2 fw-bold" href="/login">Log in</a></li>
-                        <li><a class="dropdown-item py-2" href="/register">Sign up</a></li>
+                        <li><a class="dropdown-item py-2 fw-bold" th:href="@{/login}">Log in</a></li>
+                        <li><a class="dropdown-item py-2" th:href="@{/register}">Sign up</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -170,28 +167,28 @@
                     </div>
                     <ul class="nav flex-column gap-2">
                         <li class="nav-item">
-                            <a href="/dashboard" class="nav-link text-dark fw-semibold rounded-2 px-3 hover-bg-light">
+                            <a th:href="@{/dashboard}" class="nav-link text-dark fw-semibold rounded-2 px-3 hover-bg-light">
                                 <i class="fas fa-chart-pie me-3 text-secondary"></i> Dashboard
                             </a>
                         </li>
                         <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                            <a href="/admin/approvals"
+                            <a th:href="@{/admin/approvals}"
                                 class="nav-link text-dark fw-semibold rounded-2 px-3 hover-bg-light">
                                 <i class="fas fa-user-check me-3 text-danger"></i> Approvals
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/venues" class="nav-link text-dark fw-semibold rounded-2 px-3 hover-bg-light">
+                            <a th:href="@{/venues}" class="nav-link text-dark fw-semibold rounded-2 px-3 hover-bg-light">
                                 <i class="fas fa-home me-3 text-secondary"></i> All Venues
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/bookings" class="nav-link text-dark fw-semibold rounded-2 px-3 hover-bg-light">
+                            <a th:href="@{/bookings}" class="nav-link text-dark fw-semibold rounded-2 px-3 hover-bg-light">
                                 <i class="fas fa-list me-3 text-secondary"></i> Bookings
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/support" class="nav-link text-dark fw-semibold rounded-2 px-3 hover-bg-light">
+                            <a th:href="@{/support}" class="nav-link text-dark fw-semibold rounded-2 px-3 hover-bg-light">
                                 <i class="fas fa-life-ring me-3 text-secondary"></i> Support
                             </a>
                         </li>
@@ -211,12 +208,14 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Hover effects via JS for smoother interaction
-        const hoverElements = document.querySelectorAll('.hover-shadow');
-        hoverElements.forEach(el => {
-            el.addEventListener('mouseenter', () => el.classList.add('shadow-md'));
-            el.addEventListener('mouseleave', () => el.classList.remove('shadow-md'));
+    <script th:inline="javascript">
+        // Hover effects via jQuery for smoother interaction
+        $(document).ready(function() {
+            $('.hover-shadow').on('mouseenter', function() {
+                $(this).addClass('shadow-md');
+            }).on('mouseleave', function() {
+                $(this).removeClass('shadow-md');
+            });
         });
     </script>
 </body>

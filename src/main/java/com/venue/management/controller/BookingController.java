@@ -29,12 +29,33 @@ public class BookingController {
     @GetMapping
     public String listBookings(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         User user = userService.findByUsername(userDetails.getUsername()).orElseThrow();
+        java.util.List<Booking> bookings;
         // Admins see all, customers see theirs
         if (user.getRole().name().equals("ADMIN") || user.getRole().name().equals("EVENT_MANAGER")) {
-            model.addAttribute("bookings", bookingService.getAllBookings());
+            bookings = bookingService.getAllBookings();
         } else {
-            model.addAttribute("bookings", bookingService.getCustomerBookings(user));
+            bookings = bookingService.getCustomerBookings(user);
         }
+        
+        // Auto-mark bookings as COMPLETED if current date passes end date
+        java.time.LocalDate currentDate = java.time.LocalDate.now();
+        for (Booking booking : bookings) {
+            if (!"COMPLETED".equals(booking.getStatus()) && 
+                !"CANCELLED".equals(booking.getStatus()) &&
+                booking.getEndDate() != null &&
+                currentDate.isAfter(booking.getEndDate())) {
+                bookingService.updateStatus(booking.getBookingId(), "COMPLETED");
+            }
+        }
+        
+        // Refresh bookings after status updates
+        if (user.getRole().name().equals("ADMIN") || user.getRole().name().equals("EVENT_MANAGER")) {
+            bookings = bookingService.getAllBookings();
+        } else {
+            bookings = bookingService.getCustomerBookings(user);
+        }
+        
+        model.addAttribute("bookings", bookings);
         return "booking/list";
     }
 
@@ -48,7 +69,10 @@ public class BookingController {
     }
 
     @PostMapping("/create")
-    public String createBooking(@RequestParam("venueId") Long venueId, @ModelAttribute Booking booking, @AuthenticationPrincipal UserDetails userDetails, Model model) {
+    public String createBooking(@RequestParam("venueId") Long venueId, 
+                               @ModelAttribute Booking booking, 
+                               @AuthenticationPrincipal UserDetails userDetails, 
+                               Model model) {
         try {
             Venue venue = venueService.getVenueById(venueId).orElseThrow();
             booking.setVenue(venue);
@@ -56,11 +80,22 @@ public class BookingController {
             User user = userService.findByUsername(userDetails.getUsername()).orElseThrow();
             booking.setCustomer(user);
             
+            // Set start date to current date if not provided
+            if (booking.getEventDate() == null) {
+                booking.setEventDate(java.time.LocalDate.now());
+            }
+            
+            // Validate end date is after start date
+            if (booking.getEndDate() == null || booking.getEndDate().isBefore(booking.getEventDate())) {
+                booking.setEndDate(booking.getEventDate());
+            }
+            
             bookingService.createBooking(booking);
             return "redirect:/bookings";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
-            model.addAttribute("booking", booking); 
+            model.addAttribute("booking", booking);
+            model.addAttribute("venue", venueService.getVenueById(venueId).orElseThrow());
             return "booking/create";
         }
     }
@@ -68,6 +103,12 @@ public class BookingController {
     @GetMapping("/cancel/{id}")
     public String cancelBooking(@PathVariable Long id) {
         bookingService.updateStatus(id, "CANCELLED");
+        return "redirect:/bookings";
+    }
+
+    @GetMapping("/complete/{id}")
+    public String completeBooking(@PathVariable Long id) {
+        bookingService.updateStatus(id, "COMPLETED");
         return "redirect:/bookings";
     }
 }

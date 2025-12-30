@@ -27,18 +27,28 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Booking createBooking(Booking booking) {
-        // Simple double booking check
+        // Check for date range conflicts
         List<Booking> allBookings = bookingRepository.findAll();
         boolean conflict = allBookings.stream()
                 .anyMatch(b -> b.getVenue().getVenueId().equals(booking.getVenue().getVenueId()) &&
-                               b.getEventDate().equals(booking.getEventDate()) && 
-                               !"CANCELLED".equals(b.getStatus()));
+                               !"CANCELLED".equals(b.getStatus()) &&
+                               isDateRangeOverlapping(
+                                   booking.getEventDate(), 
+                                   booking.getEndDate(),
+                                   b.getEventDate(),
+                                   b.getEndDate() != null ? b.getEndDate() : b.getEventDate()
+                               ));
         
         if (conflict) {
-            throw new RuntimeException("Venue is already booked for this date.");
+            throw new RuntimeException("Venue is already booked for the selected date range.");
         }
         booking.setStatus("PENDING");
         return bookingRepository.save(booking);
+    }
+
+    private boolean isDateRangeOverlapping(java.time.LocalDate start1, java.time.LocalDate end1,
+                                          java.time.LocalDate start2, java.time.LocalDate end2) {
+        return !start1.isAfter(end2) && !end1.isBefore(start2);
     }
 
     @Override

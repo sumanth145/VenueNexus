@@ -28,7 +28,14 @@ public class PaymentController {
                 
         Payment payment = new Payment();
         payment.setBooking(booking);
-        payment.setPaymentAmount(booking.getVenue().getPricePerDay());
+        
+        // Calculate total amount based on number of days
+        long days = java.time.temporal.ChronoUnit.DAYS.between(
+            booking.getEventDate(), 
+            booking.getEndDate()
+        ) + 1; // +1 to include both start and end dates
+        double totalAmount = booking.getVenue().getPricePerDay() * days;
+        payment.setPaymentAmount(totalAmount);
         
         model.addAttribute("payment", payment);
         return "payment/process";

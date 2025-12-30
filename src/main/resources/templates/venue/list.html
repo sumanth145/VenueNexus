@@ -11,17 +11,32 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="h3 mb-0 text-gray-800 fw-bold">Our Venues</h2>
             <div sec:authorize="hasAnyRole('ADMIN', 'EVENT_MANAGER')">
-                <a href="/venues/add" class="btn btn-primary shadow-sm"><i
+                <a th:href="@{/venues/add}" class="btn btn-primary shadow-sm"><i
                         class="fas fa-plus fa-sm text-white-50 me-2"></i>Add Venue</a>
             </div>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
 
         <div class="row">
             <div class="col-md-4 mb-4" th:each="venue : ${venues}">
                 <div class="card h-100 shadow border-0">
-                    <div class="card-img-top bg-gradient-primary d-flex align-items-center justify-content-center"
+                    <div class="card-img-top d-flex align-items-center justify-content-center overflow-hidden"
                         style="height: 200px; background: linear-gradient(45deg, #4e73df, #224abe);">
-                        <i class="fas fa-hotel fa-4x text-white-50"></i>
+                        <img th:if="${venue.imagePath != null && !venue.imagePath.isEmpty()}" 
+                            th:src="@{${venue.imagePath}}" 
+                            alt="Venue image" 
+                            class="img-fluid w-100 h-100" 
+                            style="object-fit: cover;">
+                        <i th:unless="${venue.imagePath != null && !venue.imagePath.isEmpty()}" 
+                            class="fas fa-hotel fa-4x text-white-50"></i>
                     </div>
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">
@@ -32,7 +47,7 @@
                                 class="fas fa-map-marker-alt me-1 text-primary-color"></i> <span
                                 th:text="${venue.location}">Location</span></p>
                         <p class="card-text fw-bold mb-3"><span th:text="'$' + ${venue.pricePerDay}"></span> <span
-                                class="fw-normal text-muted">/ night</span></p>
+                                class="fw-normal text-muted">/ Day</span></p>
 
                         <div class="d-flex gap-2">
                             <a th:href="@{/bookings/create/{id}(id=${venue.venueId})}"
@@ -47,9 +62,13 @@
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item text-danger fw-bold"
-                                            th:href="@{/venues/delete/{id}(id=${venue.venueId})}"
-                                            onclick="return confirm('Are you sure?')">Delete</a></li>
+                                    <li>
+                                        <form th:action="@{/venues/delete/{id}(id=${venue.venueId})}" 
+                                              method="post" 
+                                              class="delete-venue-form">
+                                            <button type="submit" class="dropdown-item text-danger fw-bold border-0 bg-transparent w-100 text-start">Delete</button>
+                                        </form>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -62,6 +81,16 @@
             </div>
         </div>
     </section>
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            $('.delete-venue-form').on('submit', function(e) {
+                if (!confirm('Are you sure you want to delete this venue?')) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

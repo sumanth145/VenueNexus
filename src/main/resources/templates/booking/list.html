@@ -16,7 +16,8 @@
                             <tr>
                                 <th class="border-0">#</th>
                                 <th class="border-0">Venue</th>
-                                <th class="border-0">Date</th>
+                                <th class="border-0">Start Date</th>
+                                <th class="border-0">End Date</th>
                                 <th class="border-0">Type</th>
                                 <th class="border-0">Status</th>
                                 <th class="border-0">Action</th>
@@ -26,22 +27,33 @@
                             <tr th:each="booking : ${bookings}">
                                 <td class="fw-bold" th:text="${booking.bookingId}">1</td>
                                 <td th:text="${booking.venue.venueName}">Venue</td>
-                                <td th:text="${booking.eventDate}">Date</td>
+                                <td th:text="${#temporals.format(booking.eventDate, 'yyyy-MM-dd')}">Start Date</td>
+                                <td th:text="${booking.endDate != null ? #temporals.format(booking.endDate, 'yyyy-MM-dd') : #temporals.format(booking.eventDate, 'yyyy-MM-dd')}">End Date</td>
                                 <td><span class="badge bg-light text-dark border"
                                         th:text="${booking.eventType}">Type</span></td>
                                 <td>
                                     <span class="badge rounded-pill"
-                                        th:classappend="${booking.status == 'CONFIRMED' ? 'bg-success' : (booking.status == 'PENDING' ? 'bg-warning' : 'bg-danger')}"
+                                        th:classappend="${booking.status == 'CONFIRMED' ? 'bg-success' : (booking.status == 'PENDING' ? 'bg-warning' : (booking.status == 'COMPLETED' ? 'bg-info' : 'bg-danger'))}"
                                         th:text="${booking.status}">Status</span>
                                 </td>
                                 <td>
-                                    <a th:if="${booking.status == 'PENDING'}"
-                                        th:href="@{/payments/pay/{id}(id=${booking.bookingId})}"
-                                        class="btn btn-sm btn-success shadow-sm fw-bold">Pay Now</a>
-                                    <a th:if="${booking.status != 'CANCELLED'}"
-                                        th:href="@{/bookings/cancel/{id}(id=${booking.bookingId})}"
-                                        class="btn btn-sm btn-outline-danger ms-1"
-                                        onclick="return confirm('Cancel booking?')"><i class="fas fa-times"></i></a>
+                                    <span th:if="${booking.status == 'PENDING'}">
+                                        <!-- PENDING: Pay Now + Cancel (wrong mark) only -->
+                                        <a th:href="@{/payments/pay/{id}(id=${booking.bookingId})}"
+                                            class="btn btn-sm btn-success shadow-sm fw-bold">Pay Now</a>
+                                        <a th:href="@{/bookings/cancel/{id}(id=${booking.bookingId})}"
+                                            class="btn btn-sm btn-outline-danger ms-1 cancel-booking-btn"><i class="fas fa-times"></i></a>
+                                    </span>
+                                    
+                                    <span th:if="${booking.status == 'CONFIRMED'}">
+                                        <!-- CONFIRMED: Tick mark + Cancel (wrong mark) -->
+                                        <a th:href="@{/bookings/complete/{id}(id=${booking.bookingId})}"
+                                            class="btn btn-sm btn-outline-success complete-booking-btn"><i class="fas fa-check"></i></a>
+                                        <a th:href="@{/bookings/cancel/{id}(id=${booking.bookingId})}"
+                                            class="btn btn-sm btn-outline-danger ms-1 cancel-booking-btn"><i class="fas fa-times"></i></a>
+                                    </span>
+                                    
+                                    <!-- COMPLETED or CANCELLED: No buttons displayed -->
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(bookings)}">

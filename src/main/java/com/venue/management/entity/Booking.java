@@ -22,9 +22,12 @@ public class Booking {
     @Column(nullable = false)
     private LocalDate eventDate;
 
+    @Column(nullable = false)
+    private LocalDate endDate;
+
     private String eventType;
 
-    private String status; // PENDING, CONFIRMED, CANCELLED
+    private String status; // PENDING, CONFIRMED, CANCELLED, COMPLETED
 
     public Booking() {
     }
@@ -84,5 +87,13 @@ public class Booking {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 }

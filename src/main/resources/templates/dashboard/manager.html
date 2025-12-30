@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    th:replace="~{layout :: content(~{::section})}">
+
+<head>
+    <title>Manager Dashboard</title>
+</head>
+
+<body>
+    <section class="fade-in">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="h3 mb-0 text-gray-800 fw-bold">Event Manager Dashboard</h2>
+        </div>
+
+        <div class="alert alert-info border-0 shadow-sm mb-4">
+            <h4 class="alert-heading">Welcome, <span sec:authentication="name">Manager</span>!</h4>
+            <p class="mb-0">Manage venues and bookings for your events.</p>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-4 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs fw-bold text-primary text-uppercase mb-1">My Venues</div>
+                                <div class="h5 mb-0 fw-bold text-gray-800">Manage Venues</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-building fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                        <a th:href="@{/venues}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs fw-bold text-success text-uppercase mb-1">Bookings</div>
+                                <div class="h5 mb-0 fw-bold text-gray-800">View Bookings</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                        <a th:href="@{/bookings}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs fw-bold text-info text-uppercase mb-1">Support</div>
+                                <div class="h5 mb-0 fw-bold text-gray-800">Help Desk</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-headset fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                        <a th:href="@{/support}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-12 mb-4">
+                <div class="card shadow border-0">
+                    <div class="card-header bg-info text-white py-3">
+                        <h5 class="mb-0 fw-bold">Manager Responsibilities</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="fw-bold mb-3">Venue Management</h6>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="fas fa-check text-info me-2"></i>Add and edit venue information</li>
+                                    <li class="mb-2"><i class="fas fa-check text-info me-2"></i>Upload venue images</li>
+                                    <li class="mb-2"><i class="fas fa-check text-info me-2"></i>Update venue availability</li>
+                                    <li class="mb-2"><i class="fas fa-check text-info me-2"></i>Manage venue pricing</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="fw-bold mb-3">Booking Management</h6>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="fas fa-check text-info me-2"></i>View all bookings</li>
+                                    <li class="mb-2"><i class="fas fa-check text-info me-2"></i>Monitor booking status</li>
+                                    <li class="mb-2"><i class="fas fa-check text-info me-2"></i>Assist with customer inquiries</li>
+                                    <li class="mb-2"><i class="fas fa-check text-info me-2"></i>Handle booking modifications</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <a th:href="@{/venues/add}" class="btn btn-primary me-2">
+                                <i class="fas fa-plus me-2"></i>Add New Venue
+                            </a>
+                            <a th:href="@{/bookings}" class="btn btn-success">
+                                <i class="fas fa-list me-2"></i>View Bookings
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>
+
