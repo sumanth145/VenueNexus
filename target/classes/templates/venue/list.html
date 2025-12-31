@@ -51,7 +51,12 @@
 
                         <div class="d-flex gap-2">
                             <a th:href="@{/bookings/create/{id}(id=${venue.venueId})}"
-                                class="btn btn-primary flex-grow-1">Book</a>
+                               th:if="${venue.status != 'MAINTENANCE'}"
+                               class="btn btn-primary flex-grow-1">Book</a>
+                            <button th:if="${venue.status == 'MAINTENANCE'}"
+                                    class="btn btn-secondary flex-grow-1" disabled>
+                                <i class="fas fa-tools me-2"></i>Under Maintenance
+                            </button>
                             <div sec:authorize="hasAnyRole('ADMIN', 'EVENT_MANAGER')" class="dropdown">
                                 <button class="btn btn-light rounded-circle" type="button" data-bs-toggle="dropdown"><i
                                         class="fas fa-ellipsis-v"></i></button>

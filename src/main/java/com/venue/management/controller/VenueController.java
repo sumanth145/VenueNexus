@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -70,6 +69,32 @@ public class VenueController {
         Venue venue = venueService.getVenueById(id).orElseThrow(() -> new RuntimeException("Venue not found"));
         model.addAttribute("venue", venue);
         return "venue/add"; // Reuse the add form
+    }
+
+    @GetMapping("/maintenance/{id}")
+    public String markAsMaintenance(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            Venue venue = venueService.getVenueById(id).orElseThrow(() -> new RuntimeException("Venue not found"));
+            venue.setStatus("MAINTENANCE");
+            venueService.saveVenue(venue);
+            redirectAttributes.addFlashAttribute("success", "Venue marked as maintenance successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error updating venue status: " + e.getMessage());
+        }
+        return "redirect:/venues/edit/" + id;
+    }
+
+    @GetMapping("/available/{id}")
+    public String markAsAvailable(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            Venue venue = venueService.getVenueById(id).orElseThrow(() -> new RuntimeException("Venue not found"));
+            venue.setStatus("AVAILABLE");
+            venueService.saveVenue(venue);
+            redirectAttributes.addFlashAttribute("success", "Venue marked as available successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error updating venue status: " + e.getMessage());
+        }
+        return "redirect:/venues/edit/" + id;
     }
 
     @PostMapping("/delete/{id}")
