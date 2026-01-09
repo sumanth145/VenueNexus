@@ -31,6 +31,9 @@ public class AuthController {
     @PostMapping("/register")
     public String registerUser(@ModelAttribute User user, Model model) {
         try {
+        	if(user.getRole().name().equals("ADMIN")) {
+            	throw new RuntimeException("You Cannot Register as Admin");
+            }
             userService.registerUser(user);
             return "redirect:/login?success";
         } catch (Exception e) {

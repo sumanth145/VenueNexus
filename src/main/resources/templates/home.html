@@ -93,7 +93,7 @@
         <div class="container">
             <a class="navbar-brand d-flex align-items-center fw-bold text-primary" th:href="@{/}">
                 <i class="fas fa-calendar-check me-2 fs-3"></i>
-                <span>Event Venue Management</span>
+                <span>Venue Nexus</span>
             </a>
             
             <div class="ms-auto d-flex gap-2">
@@ -101,10 +101,7 @@
                     <a th:href="@{/login}" class="btn btn-link text-decoration-none fw-bold">Login</a>
                     <a th:href="@{/register}" class="btn btn-primary rounded-pill px-4">Get Started</a>
                 </div>
-                <div sec:authorize="isAuthenticated()">
-                    <a th:href="@{/dashboard}" class="btn btn-primary rounded-pill px-4">Go to Dashboard</a>
-                    <a th:href="@{/logout}" class="btn btn-outline-danger rounded-pill">Logout</a>
-                </div>
+               
             </div>
         </div>
     </nav>
