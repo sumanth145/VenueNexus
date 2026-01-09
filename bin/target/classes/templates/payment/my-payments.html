@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{layout :: content(~{::section})}">
+
+<head>
+<title>My Payments</title>
+</head>
+
+<body>
+	<section class="fade-in">
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<h2 class="h3 mb-0 text-gray-800 fw-bold">My Payments</h2>
+			<form th:action="@{/payments/my-payments}" method="get">
+				<select name="status" class="form-select form-select-sm"
+					onchange="this.form.submit()">
+					<option value="" th:selected="${currentStatus == null}">All
+						Status</option>
+					<option value="SUCCESS" th:selected="${currentStatus == 'SUCCESS'}">Paid</option>
+					<option value="REFUNDED"
+						th:selected="${currentStatus == 'REFUNDED'}">Refunded</option>
+				</select>
+			</form>
+		</div>
+
+		<div class="card shadow border-0">
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table table-hover align-middle">
+						<thead class="bg-light">
+							<tr>
+								<th>S.No</th>
+								<th>Payment ID</th>
+								<th>Venue</th>
+								<th>Amount</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="payment, stat : ${payments}">
+								<td class="text-muted"
+									th:text="${(currentPage * 10) + stat.count}">1</td>
+
+								<td th:text="${payment.paymentId}">1</td>
+								<td th:text="${payment.booking.venue.venueName}">Venue</td>
+								<td class="fw-bold text-success"
+									th:text="${'₹' + #numbers.formatDecimal(payment.paymentAmount, 1, 2)}">₹0.00</td>
+								<td><span class="badge rounded-pill"
+									th:classappend="${payment.paymentStatus == 'SUCCESS' ? 'bg-success' : 'bg-danger'}"
+									th:text="${payment.paymentStatus}">Status</span></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<nav th:if="${totalPages > 1}" class="mt-4">
+					<ul class="pagination justify-content-center">
+						<li class="page-item"
+							th:classappend="${currentPage == 0} ? 'disabled'"><a
+							class="page-link"
+							th:href="@{/payments/my-payments(page=${currentPage - 1}, status=${currentStatus})}">Previous</a>
+						</li>
+						<li class="page-item"
+							th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+							<a class="page-link"
+							th:href="@{/payments/my-payments(page=${currentPage + 1}, status=${currentStatus})}">Next</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+		</div>
+		
+		<footer class="footer" style="text-align: center;">
+    <div class="container">
+        <p class="mb-0">&copy; 2026 Event Venue Management. All rights reserved.</p>
+    </div>
+</footer>
+		
+	</section>
+</body>
+</html>

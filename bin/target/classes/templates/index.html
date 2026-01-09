@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Home</title>
+  <style>
+    body {
+      background-color: skyblue;
+    }
+    h1 {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1 th:text="${message}">Fallback text</h1>
+</body>
+</html>
