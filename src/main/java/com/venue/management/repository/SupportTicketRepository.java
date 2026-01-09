@@ -11,4 +11,6 @@ import java.util.List;
 public interface SupportTicketRepository extends JpaRepository<SupportTicket, Long> {
     List<SupportTicket> findByCustomer(User customer);
     long countByTicketStatus(String ticketStatus);
+    
+    List<SupportTicket> findByIssueType(String issueType);
 }

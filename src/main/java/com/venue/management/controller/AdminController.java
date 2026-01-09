@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -29,6 +30,15 @@ public class AdminController {
         List<User> pendingManagers = userRepository.findAll().stream()
                 .filter(u -> u.getRole() == Role.EVENT_MANAGER && !u.isEnabled())
                 .toList();
+        
+     // Example addition to AdminController.java
+        List<User> approvedManagers = userRepository.findAll() 
+            .stream()
+            .filter(u -> u.getRole() == Role.EVENT_MANAGER && u.isEnabled())
+            .collect(Collectors.toList());
+        
+        model.addAttribute("approvedManagers", approvedManagers);
+        
         model.addAttribute("pendingManagers", pendingManagers);
         return "admin/approvals";
     }

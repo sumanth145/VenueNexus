@@ -1,35 +1,56 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: content(~{::section})}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{layout :: content(~{::section})}">
 
 <head>
-    <title>New Ticket</title>
+<title>New Ticket</title>
 </head>
 
 <body>
-    <section class="fade-in">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card shadow border-0">
-                    <div class="card-header bg-warning text-dark py-3">
-                        <h4 class="mb-0 fw-bold">Raise Support Ticket</h4>
-                    </div>
-                    <div class="card-body p-4">
-                        <form th:action="@{/support/create}" th:object="${ticket}" method="post">
-                            <div class="mb-3">
-                                <label for="issueDescription" class="form-label fw-bold">Describe Issue</label>
-                                <textarea class="form-control" id="issueDescription" th:field="*{issueDescription}"
-                                    rows="5" required></textarea>
-                            </div>
-                            <div class="d-flex justify-content-end">
-                                <a th:href="@{/support}" class="btn btn-light me-2">Cancel</a>
-                                <button type="submit" class="btn btn-warning px-4 fw-bold">Submit</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+	<section class="fade-in">
+		<div class="row justify-content-center">
+			<div class="col-md-8">
+				<div class="card shadow border-0">
+					<div class="card-header bg-warning text-dark py-3">
+						<h4 class="mb-0 fw-bold">Raise Support Ticket</h4>
+					</div>
+					<div class="card-body p-4">
+						<form th:action="@{/support/create}" th:object="${ticket}"
+							method="post">
+
+							<div class="mb-3">
+								<label for="issueType" class="form-label fw-bold">Issue
+									Category</label> <select class="form-select shadow-sm" id="issueType"
+									th:field="*{issueType}" required>
+									<option value="" disabled selected>Select the type of
+										issue</option>
+									<option value="Booking Related">Booking Related</option>
+									<option value="Venue Related">Venue Related</option>
+									<option value="Payment Related">Payment Related</option>
+									<option value="Others">Others</option>
+								</select>
+							</div>
+
+							<div class="mb-3">
+								<label for="issueDescription" class="form-label fw-bold">Describe
+									Issue</label>
+								<textarea class="form-control" id="issueDescription"
+									th:field="*{issueDescription}" rows="5"
+									placeholder="Please provide details about your concern..."
+									required></textarea>
+							</div>
+
+							<div class="d-flex justify-content-end">
+								<a th:href="@{/support}" class="btn btn-light me-2">Cancel</a>
+								<button type="submit" class="btn btn-warning px-4 fw-bold">Submit
+									Ticket</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 </body>
 
 </html>

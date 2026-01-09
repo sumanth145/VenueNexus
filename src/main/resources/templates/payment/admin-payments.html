@@ -10,6 +10,17 @@
     <section class="fade-in">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="h3 mb-0 text-gray-800 fw-bold">Payment Management</h2>
+            
+            <form th:action="@{/payments/admin}" method="get" class="d-flex align-items-center">
+       			<label class="me-2 fw-bold text-muted">Filter:</label>
+                <select name="status" class="form-select form-select-sm shadow-sm" onchange="this.form.submit()">
+                    <option value="" th:selected="${currentStatus == null || currentStatus == ''}">All Payment Status</option>
+                    <option value="SUCCESS" th:selected="${currentStatus == 'SUCCESS'}">Success</option>
+                    <option value="PENDING" th:selected="${currentStatus == 'PENDING'}">Pending</option>
+                    <option value="REFUNDED" th:selected="${currentStatus == 'REFUNDED'}">Refunded</option>
+                    <option value="FAILED" th:selected="${currentStatus == 'FAILED'}">Failed</option>
+                </select>
+            </form>
         </div>
 
         <div class="alert alert-primary border-0 shadow-sm mb-4">
@@ -17,7 +28,6 @@
             <p class="mb-0">Comprehensive overview of all payment transactions in the system.</p>
         </div>
 
-        <!-- Statistics Cards -->
         <div class="row mb-4">
             <div class="col-xl-3 col-md-6 mb-4">
                 <div class="card border-left-success shadow h-100 py-2">
@@ -85,7 +95,6 @@
             </div>
         </div>
 
-        <!-- Refunded Amount Card -->
         <div class="row mb-4">
             <div class="col-md-6 mb-3">
                 <div class="card border-left-danger shadow h-100 py-2">
@@ -121,7 +130,6 @@
             </div>
         </div>
 
-        <!-- All Payments Table -->
         <div class="card shadow border-0">
             <div class="card-header bg-primary text-white py-3">
                 <h5 class="mb-0 fw-bold"><i class="fas fa-list me-2"></i>All Payment Transactions</h5>
@@ -129,65 +137,71 @@
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
-                        <thead class="bg-light">
-                            <tr>
-                                <th class="border-0">Payment ID</th>
-                                <th class="border-0">Booking ID</th>
-                                <th class="border-0">Customer</th>
-                                <th class="border-0">Venue</th>
-                                <th class="border-0">Amount</th>
-                                <th class="border-0">Payment Date</th>
-                                <th class="border-0">Status</th>
-                                <th class="border-0">Booking Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="payment : ${allPayments}">
-                                <td class="fw-bold" th:text="${payment.paymentId}">1</td>
-                                <td th:text="${payment.booking.bookingId}">100</td>
-                                <td th:text="${payment.booking.user.username}">username</td>
-                                <td th:text="${payment.booking.venue.venueName}">Venue Name</td>
-                                <td class="fw-bold" 
-                                    th:classappend="${payment.booking.status == 'CANCELLED' ? 'text-danger' : 'text-success'}"
-                                    th:text="${'₹' + #numbers.formatDecimal(payment.paymentAmount, 1, 2)}">$0.00</td>
-                                <td th:text="${payment.paymentDate != null ? #temporals.format(payment.paymentDate, 'yyyy-MM-dd HH:mm') : 'N/A'}">2024-01-01 10:00</td>
-                                <td>
-                                    <span th:if="${payment.booking.status == 'CANCELLED'}" 
-                                          class="badge bg-danger rounded-pill">
-                                        <i class="fas fa-undo me-1"></i>REFUNDED
-                                    </span>
-                                    <span th:if="${payment.booking.status != 'CANCELLED' && payment.paymentStatus == 'SUCCESS'}" 
-                                          class="badge bg-success rounded-pill">
-                                        <i class="fas fa-check-circle me-1"></i>SUCCESS
-                                    </span>
-                                    <span th:if="${payment.booking.status != 'CANCELLED' && payment.paymentStatus == 'PENDING'}" 
-                                          class="badge bg-warning rounded-pill">
-                                        <i class="fas fa-clock me-1"></i>PENDING
-                                    </span>
-                                    <span th:if="${payment.booking.status != 'CANCELLED' && payment.paymentStatus == 'FAILED'}" 
-                                          class="badge bg-danger rounded-pill">
-                                        <i class="fas fa-times-circle me-1"></i>FAILED
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge rounded-pill"
-                                        th:classappend="${payment.booking.status == 'CONFIRMED' ? 'bg-success' : (payment.booking.status == 'PENDING' ? 'bg-warning' : (payment.booking.status == 'COMPLETED' ? 'bg-info' : 'bg-danger'))}"
-                                        th:text="${payment.booking.status}">Status</span>
-                                </td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(allPayments)}">
-                                <td colspan="8" class="text-center py-5 text-muted">
-                                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
-                                    <p class="mb-0">No payment records found.</p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+    <thead class="bg-light">
+        <tr>
+            <th class="border-0">S.No</th>
+            <th class="border-0">Payment ID</th>
+            <th class="border-0">Booking ID</th>
+            <th class="border-0">Customer</th>
+            <th class="border-0">Venue</th>
+            <th class="border-0">Amount</th>
+            <th class="border-0">Payment Date</th>
+            <th class="border-0">Payment Status</th>
+            <th class="border-0">Booking Status</th>
+        </tr>
+    </thead>
+    <tbody>
+    <tr th:each="payment, stat : ${allPayments}">
+        <td class="text-muted" th:text="${(currentPage * 10) + stat.count}">1</td>
+        <td class="fw-bold" th:text="${payment.paymentId}">1</td>
+        <td th:text="${payment.booking.bookingId}">100</td>
+        <td th:text="${payment.booking.user.username}">username</td>
+        <td th:text="${payment.booking.venue.venueName}">Venue Name</td>
+        <td class="fw-bold" 
+            th:classappend="${payment.booking.status == 'CANCELLED' ? 'text-danger' : 'text-success'}"
+            th:text="${'₹' + #numbers.formatDecimal(payment.paymentAmount, 1, 2)}">₹0.00</td>
+        <td th:text="${payment.paymentDate != null ? #temporals.format(payment.paymentDate, 'yyyy-MM-dd HH:mm') : 'N/A'}">2024-01-01 10:00</td>
+        
+        <td>
+            <span th:if="${payment.booking.status == 'CANCELLED'}" 
+                  class="badge bg-danger rounded-pill">
+                <i class="fas fa-undo me-1"></i>REFUNDED
+            </span>
+            <span th:if="${payment.booking.status != 'CANCELLED' && payment.paymentStatus == 'SUCCESS'}" 
+                  class="badge bg-success rounded-pill">
+                <i class="fas fa-check-circle me-1"></i>SUCCESS
+            </span>
+            <span th:if="${payment.booking.status != 'CANCELLED' && payment.paymentStatus == 'PENDING'}" 
+                  class="badge bg-warning rounded-pill">
+                <i class="fas fa-clock me-1"></i>PENDING
+            </span>
+        </td>
+
+        <td>
+            <span class="badge rounded-pill"
+                th:classappend="${payment.booking.status == 'CONFIRMED' ? 'bg-success' : (payment.booking.status == 'PENDING' ? 'bg-warning' : (payment.booking.status == 'COMPLETED' ? 'bg-info' : 'bg-danger'))}"
+                th:text="${payment.booking.status}">Status</span>
+        </td>
+    </tr>
+</tbody>
+</table>
                 </div>
+
+                <nav th:if="${totalPages > 1}" aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                            <a class="page-link" th:href="@{/payments/admin(page=${currentPage - 1}, status=${currentStatus})}">Previous</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${currentPage == i} ? 'active'">
+                            <a class="page-link" th:href="@{/payments/admin(page=${i}, status=${currentStatus})}" th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                            <a class="page-link" th:href="@{/payments/admin(page=${currentPage + 1}, status=${currentStatus})}">Next</a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
     </section>
 </body>
-
 </html>
-

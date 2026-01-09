@@ -1,85 +1,99 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-    th:replace="~{layout :: content(~{::section})}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	th:replace="~{layout :: content(~{::section})}">
 
 <head>
-    <title>Support</title>
+<title>Support</title>
 </head>
 
 <body>
-    <section class="fade-in">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="h3 mb-0 text-gray-800 fw-bold">Support Tickets</h2>
-            <a th:href="@{/support/create}" class="btn btn-warning shadow-sm fw-bold" sec:authorize="hasAnyRole('EVENT_MANAGER', 'CUSTOMER')"><i
-                    class="fas fa-plus fa-sm me-2"></i>New Ticket</a>
-        </div>
+	<section class="fade-in">
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<h2 class="h3 mb-0 text-gray-800 fw-bold">Support Tickets</h2>
+			<a th:href="@{/support/create}"
+				class="btn btn-warning shadow-sm fw-bold"
+				sec:authorize="hasAnyRole('EVENT_MANAGER', 'CUSTOMER')"><i
+				class="fas fa-plus fa-sm me-2"></i>New Ticket</a>
+		</div>
 
-        <div th:if="${success}" class="alert alert-success alert-dismissible fade show shadow-sm border-0" role="alert">
-            <i class="fas fa-check-circle me-2"></i><span th:text="${success}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
+		<div th:if="${success}"
+			class="alert alert-success alert-dismissible fade show shadow-sm border-0"
+			role="alert">
+			<i class="fas fa-check-circle me-2"></i><span th:text="${success}"></span>
+			<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+		</div>
 
-        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm border-0" role="alert">
-            <i class="fas fa-exclamation-circle me-2"></i><span th:text="${error}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
+		<div th:if="${error}"
+			class="alert alert-danger alert-dismissible fade show shadow-sm border-0"
+			role="alert">
+			<i class="fas fa-exclamation-circle me-2"></i><span
+				th:text="${error}"></span>
+			<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+		</div>
 
-        <div class="card shadow border-0">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="bg-light text-primary">
-                            <tr>
-                                <th>ID</th>
-                                <th>Issue</th>
-                                <th>Status</th>
-                                <th>Created</th>
-                                <th>Resolution Notes</th>
-                                <th sec:authorize="hasAnyRole('ADMIN', 'EVENT_MANAGER')">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="ticket : ${tickets}">
-                                <td class="fw-bold" th:text="${ticket.ticketId}">1</td>
-                                <td th:text="${ticket.issueDescription}">Issue</td>
-                                <td>
-                                    <span class="badge rounded-pill"
-                                        th:classappend="${ticket.ticketStatus == 'OPEN' ? 'bg-warning' : 'bg-success'}"
-                                        th:text="${ticket.ticketStatus}">Status</span>
-                                </td>
-                                <td class="small text-muted"
-                                    th:text="${#temporals.format(ticket.createdDate, 'yyyy-MM-dd HH:mm')}">Date</td>
-                                <td>
-                                    <div th:if="${ticket.resolutionNotes != null && !ticket.resolutionNotes.isEmpty()}" 
-                                         class="text-muted small">
-                                        <i class="fas fa-check-circle text-success me-1"></i>
-                                        <span th:text="${ticket.resolutionNotes}">Resolution notes</span>
-                                    </div>
-                                    <span th:if="${ticket.resolutionNotes == null || ticket.resolutionNotes.isEmpty()}" 
-                                          class="text-muted small">-</span>
-                                </td>
-                                <td>
-                                    <!-- Show resolve button to ADMIN for all tickets -->
-                                    <!-- Show resolve button to EVENT_MANAGER only if ticket was created by customer (not by another manager) -->
-                                    <a th:if="${ticket.ticketStatus == 'OPEN'}" 
-                                       sec:authorize="hasRole('ADMIN')"
-                                       th:href="@{/support/resolve/{id}(id=${ticket.ticketId})}"
-                                       class="btn btn-sm btn-success shadow-sm">Resolve</a>
-                                    <a th:if="${ticket.ticketStatus == 'OPEN' && ticket.customer.role.name() != 'EVENT_MANAGER'}" 
-                                       sec:authorize="hasRole('EVENT_MANAGER')"
-                                       th:href="@{/support/resolve/{id}(id=${ticket.ticketId})}"
-                                       class="btn btn-sm btn-success shadow-sm">Resolve</a>
-                                </td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(tickets)}">
-                                <td colspan="6" class="text-center py-5 text-muted">No tickets found.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </section>
+		<div class="card shadow border-0">
+			<div class="card-body p-0">
+				<div class="table-responsive">
+					<table class="table table-hover align-middle mb-0">
+						<thead class="bg-light text-primary">
+							<tr>
+								<th>S.No</th>
+								<th>ID</th>
+								<th>Issue</th>
+								<th>Category</th>
+								<th>Status</th>
+								<th>Created</th>
+								<th>Resolution Notes</th>
+								<th sec:authorize="hasAnyRole('ADMIN', 'EVENT_MANAGER')">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="ticket, stat : ${tickets}">
+								<td class="text-muted"
+									th:text="${((currentPage != null ? currentPage : 0) * 10) + stat.count}">1</td>
+
+								<td class="fw-bold" th:text="${ticket.ticketId}">1</td>
+								<td th:text="${ticket.issueDescription}">Issue</td>
+
+								<td><span class="badge bg-light text-dark border fw-normal"
+									th:text="${ticket.issueType != null ? ticket.issueType : 'Others'}">Category</span>
+								</td>
+
+								<td><span class="badge rounded-pill"
+									th:classappend="${ticket.ticketStatus == 'OPEN' ? 'bg-warning' : 'bg-success'}"
+									th:text="${ticket.ticketStatus}">Status</span></td>
+								<td class="small text-muted"
+									th:text="${#temporals.format(ticket.createdDate, 'yyyy-MM-dd HH:mm')}">Date</td>
+								<td>
+									<div
+										th:if="${ticket.resolutionNotes != null && !ticket.resolutionNotes.isEmpty()}"
+										class="text-muted small">
+										<i class="fas fa-check-circle text-success me-1"></i> <span
+											th:text="${ticket.resolutionNotes}">Resolution notes</span>
+									</div> <span
+									th:if="${ticket.resolutionNotes == null || ticket.resolutionNotes.isEmpty()}"
+									class="text-muted small">-</span>
+								</td>
+								<td><a th:if="${ticket.ticketStatus == 'OPEN'}"
+									sec:authorize="hasRole('ADMIN')"
+									th:href="@{/support/resolve/{id}(id=${ticket.ticketId})}"
+									class="btn btn-sm btn-success shadow-sm">Resolve</a> <a
+									th:if="${ticket.ticketStatus == 'OPEN' && ticket.customer.role.name() != 'EVENT_MANAGER'}"
+									sec:authorize="hasRole('EVENT_MANAGER')"
+									th:href="@{/support/resolve/{id}(id=${ticket.ticketId})}"
+									class="btn btn-sm btn-success shadow-sm">Resolve</a></td>
+							</tr>
+							<tr th:if="${#lists.isEmpty(tickets)}">
+								<td colspan="8" class="text-center py-5 text-muted">No
+									tickets found.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</section>
 </body>
 
 </html>

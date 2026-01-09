@@ -65,16 +65,8 @@
                                     style="border-radius: 12px;">
                                     <li><a class="dropdown-item fw-bold"
                                             th:href="@{/venues/edit/{id}(id=${venue.venueId})}">Edit</a></li>
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-                                    <li>
-                                        <form th:action="@{/venues/delete/{id}(id=${venue.venueId})}" 
-                                              method="post" 
-                                              class="delete-venue-form">
-                                            <button type="submit" class="dropdown-item text-danger fw-bold border-0 bg-transparent w-100 text-start">Delete</button>
-                                        </form>
-                                    </li>
+                                    
+                                    
                                 </ul>
                             </div>
                         </div>

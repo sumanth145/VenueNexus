@@ -8,14 +8,29 @@
 
 <body>
     <section class="fade-in">
-        <h2 class="h3 mb-4 text-gray-800 fw-bold">Bookings</h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="h3 mb-0 text-gray-800 fw-bold">Bookings</h2>
+            
+            <form th:action="@{/bookings}" method="get" class="d-flex align-items-center">
+                <label class="me-2 fw-bold text-muted">Filter:</label>
+                <select name="status" class="form-select form-select-sm shadow-sm" onchange="this.form.submit()" style="width: auto;">
+                    <option value="" th:selected="${currentStatus == null || currentStatus == ''}">All Status</option>
+                    <option value="PENDING" th:selected="${currentStatus == 'PENDING'}">Pending</option>
+                    <option value="CONFIRMED" th:selected="${currentStatus == 'CONFIRMED'}">Confirmed</option>
+                    <option value="COMPLETED" th:selected="${currentStatus == 'COMPLETED'}">Completed</option>
+                    <option value="CANCELLED" th:selected="${currentStatus == 'CANCELLED'}">Cancelled</option>
+                </select>
+                <input type="hidden" name="sort" th:value="${currentSort}" />
+            </form>
+        </div>
+
         <div class="card shadow border-0">
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead class="bg-light text-primary">
                             <tr>
-                                <th class="border-0">#</th>
+                                <th class="border-0">S.No</th>
                                 <th class="border-0">Venue</th>
                                 <th class="border-0">Start Date</th>
                                 <th class="border-0">End Date</th>
@@ -25,13 +40,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="booking : ${bookings}">
-                                <td class="fw-bold" th:text="${booking.bookingId}">1</td>
+                            <tr th:each="booking, iterStat : ${bookings}">
+                                <td class="fw-bold" th:text="${(currentPage * 10) + iterStat.count}">1</td>
                                 <td th:text="${booking.venue.venueName}">Venue</td>
                                 <td th:text="${#temporals.format(booking.eventDate, 'yyyy-MM-dd')}">Start Date</td>
                                 <td th:text="${booking.endDate != null ? #temporals.format(booking.endDate, 'yyyy-MM-dd') : #temporals.format(booking.eventDate, 'yyyy-MM-dd')}">End Date</td>
-                                <td><span class="badge bg-light text-dark border"
-                                        th:text="${booking.eventType}">Type</span></td>
+                                <td><span class="badge bg-light text-dark border" th:text="${booking.eventType}">Type</span></td>
                                 <td>
                                     <span class="badge rounded-pill"
                                         th:classappend="${booking.status == 'CONFIRMED' ? 'bg-success' : (booking.status == 'PENDING' ? 'bg-warning' : (booking.status == 'COMPLETED' ? 'bg-info' : 'bg-danger'))}"
@@ -39,33 +53,55 @@
                                 </td>
                                 <td>
                                     <span th:if="${booking.status == 'PENDING'}">
-                                        <!-- PENDING: Pay Now + Cancel (wrong mark) only -->
-                                        <a th:href="@{/payments/pay/{id}(id=${booking.bookingId})}"
-                                            class="btn btn-sm btn-success shadow-sm fw-bold">Pay Now</a>
-                                        <a th:href="@{/bookings/cancel/{id}(id=${booking.bookingId})}"
-                                            class="btn btn-sm btn-outline-danger ms-1 cancel-booking-btn"><i class="fas fa-times"></i></a>
+                                        <a th:href="@{/payments/pay/{id}(id=${booking.bookingId})}" class="btn btn-sm btn-success shadow-sm fw-bold">Pay Now</a>
+                                        <a th:href="@{/bookings/cancel/{id}(id=${booking.bookingId})}" 
+   class="btn btn-sm btn-outline-danger ms-1">
+    <i class="fas fa-times me-1"></i> Cancel
+</a>
                                     </span>
-                                    
                                     <span th:if="${booking.status == 'CONFIRMED'}">
-                                        <!-- CONFIRMED: Tick mark (only for admin/manager) + Cancel -->
-                                        <a th:href="@{/bookings/complete/{id}(id=${booking.bookingId})}"
-                                            class="btn btn-sm btn-outline-success complete-booking-btn" sec:authorize="hasAnyRole('ADMIN', 'EVENT_MANAGER')"><i class="fas fa-check"></i></a>
-                                        <a th:href="@{/bookings/cancel/{id}(id=${booking.bookingId})}"
-                                            class="btn btn-sm btn-outline-danger ms-1 cancel-booking-btn"><i class="fas fa-times"></i></a>
+                                        <a th:href="@{/bookings/complete/{id}(id=${booking.bookingId})}" 
+   class="btn btn-sm btn-outline-success" 
+   sec:authorize="hasAnyRole('ADMIN', 'EVENT_MANAGER')">
+    <i class="fas fa-check me-1"></i> Complete
+</a>
+
+<a th:href="@{/bookings/cancel/{id}(id=${booking.bookingId})}" 
+   class="btn btn-sm btn-outline-danger ms-1">
+    <i class="fas fa-times me-1"></i> Cancel
+</a>
                                     </span>
-                                    
-                                    <!-- COMPLETED or CANCELLED: No buttons displayed -->
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(bookings)}">
-                                <td colspan="6" class="text-center py-4 text-muted">No bookings found.</td>
+                                <td colspan="7" class="text-center py-4 text-muted">No bookings found matching the criteria.</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+
+                <nav th:if="${totalPages > 1}" aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                            <a class="page-link" th:href="@{/bookings(page=${currentPage - 1}, status=${currentStatus}, sort=${currentSort})}">Previous</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${currentPage == i} ? 'active'">
+                            <a class="page-link" th:href="@{/bookings(page=${i}, status=${currentStatus}, sort=${currentSort})}" th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                            <a class="page-link" th:href="@{/bookings(page=${currentPage + 1}, status=${currentStatus}, sort=${currentSort})}">Next</a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
+        
+        <footer class="footer" style="text-align: center;">
+    <div class="container">
+        <p class="mb-0">&copy; 2026 Event Venue Management. All rights reserved.</p>
+    </div>
+</footer>
+        
     </section>
 </body>
-
 </html>

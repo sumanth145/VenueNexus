@@ -23,6 +23,8 @@ public class SupportTicket {
     private LocalDateTime createdDate;
 
     private LocalDateTime resolvedDate;
+    
+    private String issueType;
 
     @Column(columnDefinition = "TEXT")
     private String resolutionNotes;
@@ -95,5 +97,13 @@ public class SupportTicket {
 
     public void setResolutionNotes(String resolutionNotes) {
         this.resolutionNotes = resolutionNotes;
+    }
+    
+    public String getIssueType() {
+        return issueType;
+    }
+
+    public void setIssueType(String issueType) {
+        this.issueType = issueType;
     }
 }

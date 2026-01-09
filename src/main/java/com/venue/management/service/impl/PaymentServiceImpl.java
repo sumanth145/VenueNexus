@@ -7,6 +7,8 @@ import com.venue.management.repository.BookingRepository;
 import com.venue.management.repository.PaymentRepository;
 import com.venue.management.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,13 +53,19 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public List<Payment> getUserPayments(User user) {
-        return paymentRepository.findByBooking_User_UserId(user.getUserId());
+    public Page<Payment> getAllPayments(String status, Pageable pageable) {
+        if (status != null && !status.isEmpty() && !status.equalsIgnoreCase("ALL")) {
+            return paymentRepository.findByPaymentStatus(status, pageable);
+        }
+        return paymentRepository.findAll(pageable);
     }
 
     @Override
-    public List<Payment> getAllPayments() {
-        return paymentRepository.findAll();
+    public Page<Payment> getUserPayments(User user, String status, Pageable pageable) {
+        if (status != null && !status.isEmpty() && !status.equalsIgnoreCase("ALL")) {
+            return paymentRepository.findByBooking_User_UserIdAndPaymentStatus(user.getUserId(), status, pageable);
+        }
+        return paymentRepository.findByBooking_User_UserId(user.getUserId(), pageable);
     }
 
     @Override
@@ -74,7 +82,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public double getTotalEarnings() {
-        Double total = paymentRepository.sumSuccessfulPayments();
+        Double total = paymentRepository.sumOfPayments();
         return total != null ? total : 0.0;
     }
 

@@ -7,6 +7,10 @@ import com.venue.management.service.BookingService;
 import com.venue.management.service.UserService;
 import com.venue.management.service.VenueService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -27,17 +31,27 @@ public class BookingController {
     private UserService userService;
 
     @GetMapping
-    public String listBookings(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+    public String listBookings(@AuthenticationPrincipal UserDetails userDetails, 
+                               @RequestParam(defaultValue = "0") int page,
+                               @RequestParam(required = false) String status,
+                               Model model) {
         User user = userService.findByUsername(userDetails.getUsername()).orElseThrow();
         java.util.List<Booking> bookings;
-        // Admins see all, customers see theirs
+        
+        // Define paging and sorting (10 records per page)
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("bookingId").descending());
+        
+        Page<Booking> bookingPage;
+        
+     // Admins see all, customers see theirs
         if (user.getRole().name().equals("ADMIN") || user.getRole().name().equals("EVENT_MANAGER")) {
-            bookings = bookingService.getAllBookings();
+            bookings=bookingService.getTotalBookings();
         } else {
-            bookings = bookingService.getCustomerBookings(user);
+            bookings=bookingService.getTotalBookings();
         }
         
-        // Auto-mark bookings as COMPLETED if current date passes end date
+        
+     // Auto-mark bookings as COMPLETED if current date passes end date
         java.time.LocalDate currentDate = java.time.LocalDate.now();
         for (Booking booking : bookings) {
             if (!"COMPLETED".equals(booking.getStatus()) && 
@@ -48,14 +62,17 @@ public class BookingController {
             }
         }
         
-        // Refresh bookings after status updates
         if (user.getRole().name().equals("ADMIN") || user.getRole().name().equals("EVENT_MANAGER")) {
-            bookings = bookingService.getAllBookings();
+            bookingPage = bookingService.getAllBookings(status, pageable);
         } else {
-            bookings = bookingService.getCustomerBookings(user);
+            bookingPage = bookingService.getCustomerBookings(user, status, pageable);
         }
+
+        model.addAttribute("bookings", bookingPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", bookingPage.getTotalPages());
+        model.addAttribute("currentStatus", status);
         
-        model.addAttribute("bookings", bookings);
         return "booking/list";
     }
 

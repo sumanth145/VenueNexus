@@ -26,7 +26,10 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new RuntimeException("Email already exists");
         }
+        
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        
+        
 
         if (user.getRole() == com.venue.management.entity.Role.EVENT_MANAGER) {
             user.setEnabled(false);
