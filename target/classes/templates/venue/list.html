@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    th:replace="~{layout :: content(~{::section})}">
+
+
+<head>
+    <title>Venues</title>
+</head>
+
+<body>
+    <section class="fade-in">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="h3 mb-0 text-gray-800 fw-bold">Our Venues</h2>
+            <div sec:authorize="hasAnyRole('ADMIN', 'EVENT_MANAGER')">
+                <a th:href="@{/venues/add}" class="btn btn-primary shadow-sm"><i
+                        class="fas fa-plus fa-sm text-white-50 me-2"></i>Add Venue</a>
+            </div>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-4" th:each="venue : ${venues}">
+                <div class="card h-100 shadow border-0">
+                    <div class="card-img-top d-flex align-items-center justify-content-center overflow-hidden"
+                        style="height: 200px; background: linear-gradient(45deg, #4e73df, #224abe);">
+                        <img th:if="${venue.imagePath != null && !venue.imagePath.isEmpty()}" 
+                            th:src="@{${venue.imagePath}}" 
+                            alt="Venue image" 
+                            class="img-fluid w-100 h-100" 
+                            style="object-fit: cover;">
+                        <i th:unless="${venue.imagePath != null && !venue.imagePath.isEmpty()}" 
+                            class="fas fa-hotel fa-4x text-white-50"></i>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title fw-bold text-dark mb-0" th:text="${venue.venueName}">Venue Name</h5>
+                            <span class="badge bg-light text-dark border" th:text="${venue.status}">STATUS</span>
+                        </div>
+                        <p class="card-text text-muted small mb-2"><i
+                                class="fas fa-map-marker-alt me-1 text-primary-color"></i> <span
+                                th:text="${venue.location}">Location</span></p>
+                        <p class="card-text fw-bold mb-3"><span th:text="'₹' + ${venue.pricePerDay}"></span> <span
+                                class="fw-normal text-muted">/ Day</span></p>
+
+                        <div class="d-flex gap-2">
+                            <a th:href="@{/bookings/create/{id}(id=${venue.venueId})}"
+                               th:if="${venue.status != 'MAINTENANCE'}"
+                               class="btn btn-primary flex-grow-1">Book</a>
+                            <button th:if="${venue.status == 'MAINTENANCE'}"
+                                    class="btn btn-secondary flex-grow-1" disabled>
+                                <i class="fas fa-tools me-2"></i>Under Maintenance
+                            </button>
+                            <div sec:authorize="hasAnyRole('ADMIN', 'EVENT_MANAGER')" class="dropdown">
+                                <button class="btn btn-light rounded-circle" type="button" data-bs-toggle="dropdown"><i
+                                        class="fas fa-ellipsis-v"></i></button>
+                                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg"
+                                    style="border-radius: 12px;">
+                                    <li><a class="dropdown-item fw-bold"
+                                            th:href="@{/venues/edit/{id}(id=${venue.venueId})}">Edit</a></li>
+                                    
+                                    
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(venues)}" class="col-12 text-center py-5">
+                <p class="h5 text-muted">No venues found.</p>
+            </div>
+        </div>
+    </section>
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            $('.delete-venue-form').on('submit', function(e) {
+                if (!confirm('Are you sure you want to delete this venue?')) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

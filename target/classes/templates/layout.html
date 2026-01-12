@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	th:fragment="content(content)">
+
+<head th:fragment="head">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event Venue Management</title>
+<!-- Google Fonts -->
+<link
+	href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+	rel="stylesheet">
+<!-- Bootstrap -->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<!-- Font Awesome -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Custom CSS -->
+<link rel="stylesheet" th:href="@{/css/styles.css}">
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<style>
+/* Airbnb Layout Specifics overrides */
+body {
+	padding-top: 80px;
+}
+
+.content-container {
+	max-width: 1280px;
+	/* Airbnb standard max width */
+	margin: 0 auto;
+	padding: 2rem 40px;
+}
+
+/* Floating Sidebar for Admin feel but lighter */
+.sidebar {
+	background-color: #fff;
+	border-right: 1px solid #ebebeb;
+	padding-top: 2rem;
+}
+
+@media ( min-width : 992px) {
+	.with-sidebar {
+		display: flex;
+	}
+	.sidebar-col {
+		width: 280px;
+		flex-shrink: 0;
+		position: fixed;
+		height: 100vh;
+		top: 80px;
+		left: 0;
+		overflow-y: auto;
+	}
+	.content-col {
+		flex-grow: 1;
+		margin-left: 280px;
+		padding: 2rem;
+	}
+}
+</style>
+</head>
+
+<body>
+
+	<nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+		<div class="container-fluid px-5">
+			<!-- Brand -->
+			<a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+				<i class="fas fa-calendar-check fa-1x me-2 text-primary-color"
+				style="font-size: 3rem; color: var(--primary-color);"></i> <span
+				style="color: var(--primary-color); font-weight: 700; letter-spacing: -1px;">Venue Nexus</span>
+			</a>
+
+			<!-- Search Bar (Center) -->
+			<!-- <div class="d-none d-md-block mx-auto">
+                <div class="input-group rounded-pill shadow-sm hover-shadow transition-all"
+                    style="border: 1px solid #ddd; padding: 4px 4px 4px 20px; width: 400px; cursor: pointer;">
+                    <span class="d-flex align-items-center text-dark fw-bold" style="font-size: 0.9rem;">Anywhere</span>
+                    <span class="mx-3 text-secondary">|</span>
+                    <span class="d-flex align-items-center text-dark fw-bold" style="font-size: 0.9rem;">Any week</span>
+                    <span class="mx-3 text-secondary">|</span>
+                    <input type="text" class="border-0 bg-transparent flex-grow-1" placeholder="Add guests"
+                        style="outline: none; font-size: 0.9rem; color: #717171;">
+                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center ms-2"
+                        style="width: 32px; height: 32px;">
+                        <i class="fas fa-search text-white" style="font-size: 0.8rem;"></i>
+                    </div>
+                </div>
+            </div> -->
+
+			<!-- User Menu (Right) -->
+			<div class="d-flex align-items-center gap-3">
+
+
+				<!-- Authenticated User Dropdown -->
+				<div class="dropdown" sec:authorize="isAuthenticated()">
+					<button
+						class="btn border rounded-pill p-1 ps-3 d-flex align-items-center gap-2 hover-shadow"
+						type="button" data-bs-toggle="dropdown" aria-expanded="false"
+						style="border-color: #ddd !important;">
+						<i class="fas fa-bars text-secondary"></i>
+						<div
+							class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center"
+							style="width: 30px; height: 30px; font-size: 0.8rem;">
+							<span th:text="${#strings.substring(#authentication.name, 0, 1)}">U</span>
+						</div>
+					</button>
+					<ul
+						class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 py-2"
+						style="border-radius: 12px; min-width: 240px;">
+						<li>
+							<h6 class="dropdown-header fw-bold text-dark">
+								Welcome, <span sec:authentication="name">User</span>
+							</h6>
+						</li>
+						<li>
+							<hr class="dropdown-divider">
+						</li>
+						<li><a class="dropdown-item py-2 fw-semibold"
+							th:href="@{/dashboard}">Dashboard</a></li>
+						<li><a class="dropdown-item py-2" th:href="@{/venues}">Browse
+								Venues</a></li>
+						<li><a class="dropdown-item py-2" th:href="@{/bookings}">My
+								Bookings</a></li>
+						<li><a class="dropdown-item py-2"
+							th:href="@{/payments/my-payments}"
+							sec:authorize="hasRole('CUSTOMER')">My Payments</a></li>
+						<li><a class="dropdown-item py-2"
+							th:href="@{/payments/admin}" sec:authorize="hasRole('ADMIN')">Payment
+								Management</a></li>
+						<li><a class="dropdown-item py-2" th:href="@{/support}">Support
+								Desk</a></li>
+						<li>
+							<hr class="dropdown-divider">
+						</li>
+						<li>
+							<form th:action="@{/logout}" method="post" class="px-2">
+								<button type="submit" class="dropdown-item text-danger fw-bold">Log
+									out</button>
+							</form>
+						</li>
+					</ul>
+				</div>
+
+				<!-- Guest User Dropdown -->
+				<div class="dropdown" sec:authorize="!isAuthenticated()">
+					<button
+						class="btn border rounded-pill p-1 ps-3 d-flex align-items-center gap-2 hover-shadow"
+						type="button" data-bs-toggle="dropdown" aria-expanded="false"
+						style="border-color: #ddd !important;">
+						<i class="fas fa-bars text-secondary"></i>
+						<div
+							class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center"
+							style="width: 30px; height: 30px;">
+							<i class="fas fa-user-circle fa-lg text-white"></i>
+						</div>
+					</button>
+					<ul
+						class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 py-2"
+						style="border-radius: 12px; min-width: 240px;">
+						<li><a class="dropdown-item py-2 fw-bold" th:href="@{/login}">Log
+								in</a></li>
+						<li><a class="dropdown-item py-2" th:href="@{/register}">Sign
+								up</a></li>
+						<li>
+							<hr class="dropdown-divider">
+						</li>
+						<li><a class="dropdown-item py-2" href="#">Host your home</a></li>
+						<li><a class="dropdown-item py-2" href="#">Help Center</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+	</nav>
+
+	<!-- Main Content Wrapper -->
+	<div sec:authorize="isAuthenticated()">
+		<div class="with-sidebar">
+			<div class="sidebar-col d-none d-lg-block">
+				<div class="d-flex flex-column px-4">
+					<div class="mb-4">
+						<small class="text-uppercase fw-bold text-muted"
+							style="font-size: 0.7rem; letter-spacing: 1px;"> <span
+							sec:authorize="hasRole('ADMIN')">Admin Panel</span> <span
+							sec:authorize="hasRole('EVENT_MANAGER')">Manager Panel</span> <span
+							sec:authorize="hasRole('CUSTOMER')">User Panel</span>
+
+						</small>
+
+					</div>
+					<ul class="nav flex-column gap-2">
+						<li class="nav-item"><a th:href="@{/dashboard}"
+							class="nav-link text-dark fw-semibold rounded-2 px-3 hover-bg-light">
+								<i class="fas fa-chart-pie me-3 text-secondary"></i> Dashboard
+						</a></li>
+						<li class="nav-item" sec:authorize="hasRole('ADMIN')"><a
+							th:href="@{/admin/approvals}"
+							class="nav-link text-dark fw-semibold rounded-2 px-3 hover-bg-light">
+								<i class="fas fa-user-check me-3 text-danger"></i> Approvals
+						</a></li>
+						<li class="nav-item"><a th:href="@{/venues}"
+							class="nav-link text-dark fw-semibold rounded-2 px-3 hover-bg-light">
+								<i class="fas fa-home me-3 text-secondary"></i> All Venues
+						</a></li>
+						<li class="nav-item"><a th:href="@{/bookings}"
+							class="nav-link text-dark fw-semibold rounded-2 px-3 hover-bg-light">
+								<i class="fas fa-list me-3 text-secondary"></i> Bookings
+						</a></li>
+						<li class="nav-item"><a th:href="@{/support}"
+							class="nav-link text-dark fw-semibold rounded-2 px-3 hover-bg-light">
+								<i class="fas fa-life-ring me-3 text-secondary"></i> Support
+						</a></li>
+						<li class="nav-item"><a th:href="@{/payments/my-payments}"
+							class="nav-link text-dark fw-semibold rounded-2 px-3 hover-bg-light"
+							sec:authorize="hasRole('CUSTOMER')"> <i
+								class="fas fa-credit-card me-3 text-secondary"></i> My Payments
+						</a> <a th:href="@{/payments/admin}"
+							class="nav-link text-dark fw-semibold rounded-2 px-3 hover-bg-light"
+							sec:authorize="hasRole('ADMIN')"> <i
+								class="fas fa-credit-card me-3 text-secondary"></i> Payments
+						</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="content-col">
+				<div th:replace="${content}"></div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Guest Layout (No sidebar, full width centered) -->
+	<div sec:authorize="!isAuthenticated()" class="content-container">
+		<div th:replace="${content}"></div>
+	</div>
+
+
+
+	<!-- Scripts -->
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script th:inline="javascript">
+		// Hover effects via jQuery for smoother interaction
+		$(document).ready(function() {
+			$('.hover-shadow').on('mouseenter', function() {
+				$(this).addClass('shadow-md');
+			}).on('mouseleave', function() {
+				$(this).removeClass('shadow-md');
+			});
+		});
+	</script>
+</body>
+
+</html>
