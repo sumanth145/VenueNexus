@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Venue Nexus | Event Venue Management</title>
+
+<!-- Fonts & Icons -->
+<link
+	href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Bootstrap -->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+
+<style>
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: #f8f9fc;
+}
+
+/* Navbar spacing fix */
+body::before {
+    content: "";
+    display: block;
+    height: 90px;
+}
+
+/* HERO */
+.hero-section {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: white;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.55);
+}
+
+.hero-subtitle {
+    max-width: 720px;
+    margin: 20px auto 40px;
+    font-size: 1.25rem;
+    opacity: 0.95;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+/* FEATURES */
+.features-container {
+    margin-top: -70px;
+    padding-bottom: 80px;
+}
+
+.feature-card {
+    border-radius: 20px;
+    padding: 2.5rem;
+    background: white;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    transition: transform .3s ease;
+    text-align: center;
+    height: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+}
+
+.icon-box {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 2rem;
+}
+
+.bg-primary-light { background: rgba(78,115,223,0.1); color: #4e73df; }
+.bg-success-light { background: rgba(28,200,138,0.1); color: #1cc88a; }
+.bg-info-light { background: rgba(54,185,204,0.1); color: #36b9cc; }
+
+/* VENUES */
+.venue-card {
+    border-radius: 20px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    transition: transform .3s ease;
+}
+
+.venue-card:hover {
+    transform: translateY(-8px);
+}
+
+.venue-card img {
+    height: 220px;
+    object-fit: cover;
+}
+
+/* FOOTER */
+.footer {
+    background: #ffffff;
+    border-top: 1px solid #e3e6f0;
+}
+</style>
+
+</head>
+
+<body>
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm py-3">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-primary d-flex align-items-center" th:href="@{/}">
+            <i class="fas fa-calendar-check me-2 fs-3"></i>
+            Venue Nexus
+        </a>
+
+        <div class="ms-auto" sec:authorize="isAnonymous()">
+            <a th:href="@{/login}" class="btn btn-link fw-bold text-decoration-none">Login</a>
+            <a th:href="@{/register}" class="btn btn-primary rounded-pill px-4">Get Started</a>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero-section"
+        th:style="|background-image:url('@{/images/About-Us.jpg}');|">
+    <div class="container">
+        <h1 class="hero-title">Seamless Event Venue Bookings</h1>
+        <p class="hero-subtitle">
+            Discover, book, and manage premium venues effortlessly —
+            built for modern event professionals.
+        </p>
+
+        <div class="d-flex justify-content-center gap-3">
+            <a th:href="@{/login}" class="btn btn-light btn-lg rounded-pill px-5 fw-bold">
+                Browse Venues
+            </a>
+            <a th:href="@{/register}" class="btn btn-outline-light btn-lg rounded-pill px-5 fw-bold">
+                Book Now
+            </a>
+        </div>
+    </div>
+</header>
+
+<!-- FEATURES -->
+<section class="container features-container">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="icon-box bg-primary-light">
+                    <i class="fas fa-building"></i>
+                </div>
+                <h4 class="fw-bold">Premium Venues</h4>
+                <p class="text-muted">Handpicked spaces for weddings, corporate meetings, and private events.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="icon-box bg-success-light">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h4 class="fw-bold">Instant Booking</h4>
+                <p class="text-muted">Real-time availability and seamless scheduling without conflicts.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="icon-box bg-info-light">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h4 class="fw-bold">24/7 Support</h4>
+                <p class="text-muted">Dedicated support to assist you at every stage of your booking.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+	<!-- VENUES -->
+	<section class="container py-5">
+		<div class="text-center mb-5">
+			<h2 class="fw-bold">Explore Popular Venues</h2>
+			<p class="text-muted">Trusted by thousands of event organizers</p>
+		</div>
+
+		<div class="row g-4">
+			<div class="col-md-4">
+				<div class="card venue-card">
+					<img th:src="@{/images/venue1.jpg}" alt="">
+					<div class="card-body">
+						<h5 class="fw-bold">Grand Royal Hall</h5>
+						<p class="text-muted small">Luxury weddings & receptions</p>
+						<span class="badge bg-primary">Capacity 500+</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-4">
+				<div class="card venue-card">
+					<img th:src="@{/images/venue2.jpg}" alt="">
+					<div class="card-body">
+						<h5 class="fw-bold">Skyline Conference Center</h5>
+						<p class="text-muted small">Corporate & tech events</p>
+						<span class="badge bg-success">Capacity 300</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-4">
+				<div class="card venue-card">
+					<img th:src="@{/images/venue3.jpg}" alt="">
+					<div class="card-body">
+						<h5 class="fw-bold">Garden Bliss Pavilion</h5>
+						<p class="text-muted small">Outdoor celebrations</p>
+						<span class="badge bg-info">Capacity 200</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- STATS -->
+	<section class="bg-light py-5">
+		<div class="container">
+			<div class="row text-center g-4">
+				<div class="col-md-3">
+					<h2 class="fw-bold text-primary">1,200+</h2>
+					<p class="text-muted">Venues Listed</p>
+				</div>
+				<div class="col-md-3">
+					<h2 class="fw-bold text-success">25K+</h2>
+					<p class="text-muted">Bookings</p>
+				</div>
+				<div class="col-md-3">
+					<h2 class="fw-bold text-info">98%</h2>
+					<p class="text-muted">Satisfaction</p>
+				</div>
+				<div class="col-md-3">
+					<h2 class="fw-bold text-warning">24/7</h2>
+					<p class="text-muted">Support</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- TESTIMONIALS -->
+	<section class="container py-5">
+		<div class="text-center mb-5">
+			<h2 class="fw-bold">What Clients Say</h2>
+		</div>
+
+		<div class="row g-4">
+			<div class="col-md-4">
+				<div class="feature-card">
+					<p class="fst-italic text-muted">“Booking venues has never been
+						this easy and professional.”</p>
+					<h6 class="fw-bold mb-0">Ananya Sharma</h6>
+					<small class="text-muted">Wedding Planner</small>
+				</div>
+			</div>
+
+			<div class="col-md-4">
+				<div class="feature-card">
+					<p class="fst-italic text-muted">“Perfect solution for managing
+						multiple corporate events.”</p>
+					<h6 class="fw-bold mb-0">Rahul Verma</h6>
+					<small class="text-muted">Operations Manager</small>
+				</div>
+			</div>
+
+			<div class="col-md-4">
+				<div class="feature-card">
+					<p class="fst-italic text-muted">“Clean UI, instant booking,
+						and excellent support.”</p>
+					<h6 class="fw-bold mb-0">Sneha Patel</h6>
+					<small class="text-muted">Event Organizer</small>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- CTA -->
+	<section class="py-5 text-center text-white"
+		style="background: linear-gradient(135deg, #4e73df, #1cc88a)">
+		<div class="container">
+			<h2 class="fw-bold mb-3">Ready to Book Your Next Venue?</h2>
+			<p class="mb-4">Join thousands of professionals today</p>
+			<a th:href="@{/register}"
+				class="btn btn-light btn-lg rounded-pill px-5 fw-bold"> Get
+				Started Free </a>
+		</div>
+	</section>
+
+	<!-- FOOTER -->
+	<footer class="footer bg-white border-top">
+    <div class="container py-5">
+        <div class="row g-4 text-start">
+
+            <!-- BRAND -->
+            <div class="col-lg-4">
+                <a class="navbar-brand d-flex align-items-center fw-bold text-primary mb-3"
+                   th:href="@{/}">
+                    <i class="fas fa-calendar-check me-2 fs-3"></i>
+                    <span>Venue Nexus</span>
+                </a>
+
+                <p class="text-muted small pe-lg-5">
+                    Empowering event organizers with a unified, secure platform for discovering,
+                    booking, and managing venues at professional scale.
+                </p>
+
+                <!-- SOCIAL -->
+                <div class="d-flex gap-3 mt-4">
+                    <a href="#" class="text-secondary fs-5" aria-label="Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-secondary fs-5" aria-label="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="text-secondary fs-5" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="#" class="text-secondary fs-5" aria-label="Discord">
+                        <i class="fab fa-discord"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- SUPPORT -->
+            <div class="col-6 col-lg-3 ms-lg-auto">
+                <h6 class="fw-bold text-dark mb-3">Support</h6>
+                <ul class="list-unstyled small">
+                    <li class="mb-2">
+                        <a href="mailto:support@venue.nexus"
+                           class="text-muted text-decoration-none">
+                            <i class="fas fa-envelope me-2"></i>support@Venue.Nexus
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="tel:+18005550199"
+                           class="text-muted text-decoration-none">
+                            <i class="fas fa-phone me-2"></i>+1 (800) 555-0199
+                        </a>
+                    </li>
+                    
+                  
+                </ul>
+            </div>
+
+            <!-- EXPLORE -->
+            <div class="col-6 col-lg-2">
+                <h6 class="fw-bold text-dark mb-3">Explore</h6>
+                <ul class="list-unstyled small">
+                    <li class="mb-2">
+                        <a th:href="@{/login}" class="text-muted text-decoration-none">
+                            Browse Venues
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" class="text-muted text-decoration-none">
+                            Privacy Policy
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" class="text-muted text-decoration-none">
+                            Terms of Service
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- OFFICE -->
+            <div class="col-lg-2">
+                <h6 class="fw-bold text-dark mb-3">Office</h6>
+                <p class="text-muted small mb-2">
+                    123 Event Horizon Way,<br>
+                    Suite 400, Tech City,<br>
+                    TC 94105
+                </p>
+                <a href="https://maps.google.com"
+                   target="_blank"
+                   class="small text-decoration-none">
+                    <i class="fas fa-map-marker-alt me-1"></i>View on Map
+                </a>
+            </div>
+        </div>
+
+        <!-- NEWSLETTER -->
+        <div class="row mt-5 border-top pt-4 align-items-center">
+            <div class="col-md-6">
+                <h6 class="fw-bold mb-1">Stay in the loop</h6>
+                <p class="small text-muted mb-0">
+                    Get product updates, venue tips, and event insights.
+                </p>
+            </div>
+
+            <div class="col-md-6">
+                <form class="d-flex gap-2 justify-content-md-end mt-3 mt-md-0">
+                    <input type="email"
+                           class="form-control form-control-sm w-50"
+                           placeholder="Your email address"
+                           required>
+                    <button class="btn btn-primary btn-sm">
+                        Subscribe
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- BOTTOM BAR -->
+        <div class="text-center small text-muted mt-4">
+            © <span th:text="${#dates.format(#dates.createNow(),'yyyy')}">2026</span>
+            Venue Nexus · All rights reserved · v1.0.0
+        </div>
+    </div>
+</footer>
+
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

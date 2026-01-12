@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	th:replace="~{layout :: content(~{::section})}">
+
+<head>
+<title>Admin - Payment Management</title>
+</head>
+
+<body>
+	<section class="fade-in">
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<h2 class="h3 mb-0 text-gray-800 fw-bold">Payment Management</h2>
+		</div>
+
+		<!-- Search and Filter Bar -->
+
+
+		<div class="alert alert-primary border-0 shadow-sm mb-4">
+			<h5 class="alert-heading">
+				<i class="fas fa-chart-line me-2"></i>Payment Analytics
+			</h5>
+			<p class="mb-0">Comprehensive overview of all payment
+				transactions in the system.</p>
+		</div>
+
+		<div class="row mb-4">
+			<div class="col-xl-3 col-md-6 mb-4">
+				<div class="card border-left-success shadow h-100 py-2">
+					<div class="card-body">
+						<div class="row no-gutters align-items-center">
+							<div class="col mr-2">
+								<div class="text-xs fw-bold text-success text-uppercase mb-1">Total
+									Received</div>
+								<div class="h5 mb-0 fw-bold text-gray-800"
+									th:text="${'₹' + #numbers.formatDecimal(totalEarnings, 1, 2)}">$0.00</div>
+							</div>
+							<div class="col-auto">
+								<i class="fas fa-indian-rupee-sign fa-2x text-gray-300"></i>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-xl-3 col-md-6 mb-4">
+				<div class="card border-left-primary shadow h-100 py-2">
+					<div class="card-body">
+						<div class="row no-gutters align-items-center">
+							<div class="col mr-2">
+								<div class="text-xs fw-bold text-primary text-uppercase mb-1">Successful
+									Payments</div>
+								<div class="h5 mb-0 fw-bold text-gray-800"
+									th:text="${successfulPaymentsCount}">0</div>
+							</div>
+							<div class="col-auto">
+								<i class="fas fa-check-circle fa-2x text-gray-300"></i>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-xl-3 col-md-6 mb-4">
+				<div class="card border-left-warning shadow h-100 py-2">
+					<div class="card-body">
+						<div class="row no-gutters align-items-center">
+							<div class="col mr-2">
+								<div class="text-xs fw-bold text-warning text-uppercase mb-1">Pending
+									Payments</div>
+								<div class="h5 mb-0 fw-bold text-gray-800"
+									th:text="${pendingPaymentsCount}">0</div>
+							</div>
+							<div class="col-auto">
+								<i class="fas fa-clock fa-2x text-gray-300"></i>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-xl-3 col-md-6 mb-4">
+				<div class="card border-left-danger shadow h-100 py-2">
+					<div class="card-body">
+						<div class="row no-gutters align-items-center">
+							<div class="col mr-2">
+								<div class="text-xs fw-bold text-danger text-uppercase mb-1">Refunded
+									Payments</div>
+								<div class="h5 mb-0 fw-bold text-gray-800"
+									th:text="${refundedPaymentsCount}">0</div>
+							</div>
+							<div class="col-auto">
+								<i class="fas fa-undo fa-2x text-gray-300"></i>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row mb-4">
+			<div class="col-md-6 mb-3">
+				<div class="card border-left-danger shadow h-100 py-2">
+					<div class="card-body">
+						<div class="row no-gutters align-items-center">
+							<div class="col mr-2">
+								<div class="text-xs fw-bold text-danger text-uppercase mb-1">Total
+									Refunded Amount</div>
+								<div class="h4 mb-0 fw-bold text-danger"
+									th:text="${'₹' + #numbers.formatDecimal(totalRefundedAmount, 1, 2)}">₹0.00</div>
+							</div>
+							<div class="col-auto">
+								<i class="fas fa-money-bill-wave fa-3x text-gray-300"></i>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6 mb-3">
+				<div class="card border-left-info shadow h-100 py-2">
+					<div class="card-body">
+						<div class="row no-gutters align-items-center">
+							<div class="col mr-2">
+								<div class="text-xs fw-bold text-info text-uppercase mb-1">Net
+									Revenue</div>
+								<div class="h4 mb-0 fw-bold text-success"
+									th:text="${'₹' + #numbers.formatDecimal(totalEarnings - totalRefundedAmount, 1, 2)}">$0.00</div>
+							</div>
+							<div class="col-auto">
+								<i class="fas fa-chart-line fa-3x text-gray-300"></i>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		 <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <form th:action="@{/payments/admin}" method="get" class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-muted">Search</label>
+                        <input type="text" name="search" class="form-control" 
+                            th:value="${currentSearch}" 
+                            placeholder="Search by venue, username, or status...">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold text-muted">Status</label>
+                        <select name="status" class="form-select">
+                            <option value="" th:selected="${currentStatus == null || currentStatus == ''}">All Status</option>
+                            <option value="SUCCESS" th:selected="${currentStatus == 'SUCCESS'}">Success</option>
+                        
+                            <option value="REFUNDED" th:selected="${currentStatus == 'REFUNDED'}">Refunded</option>
+                            
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold text-muted">Sort By</label>
+                        <select name="sortBy" class="form-select">
+                            <option value="paymentId" th:selected="${sortBy == 'paymentId'}">Payment ID</option>
+                            <option value="paymentDate" th:selected="${sortBy == 'paymentDate'}">Payment Date</option>
+                            <option value="paymentAmount" th:selected="${sortBy == 'paymentAmount'}">Amount</option>
+                            <option value="paymentStatus" th:selected="${sortBy == 'paymentStatus'}">Status</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold text-muted">Order</label>
+                        <select name="sortDir" class="form-select">
+                            <option value="desc" th:selected="${sortDir == 'desc'}">Descending</option>
+                            <option value="asc" th:selected="${sortDir == 'asc'}">Ascending</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold text-muted">Page Size</label>
+                        <select name="size" class="form-select">
+                            <option value="5" th:selected="${size == 5}">5</option>
+                            <option value="10" th:selected="${size == 10}">10</option>
+                            <option value="20" th:selected="${size == 20}">20</option>
+                            <option value="50" th:selected="${size == 50}">50</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-primary me-2"><i class="fas fa-search me-1"></i>Search</button>
+                        <a th:href="@{/payments/admin}" class="btn btn-secondary"><i class="fas fa-redo me-1"></i>Reset</a>
+                    </div>
+                    <input type="hidden" name="page" value="0" />
+                </form>
+            </div>
+        </div>
+
+		<div class="card shadow border-0">
+			<div class="card-header bg-primary text-white py-3">
+				<h5 class="mb-0 fw-bold">
+					<i class="fas fa-list me-2"></i>All Payment Transactions
+				</h5>
+			</div>
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table table-hover align-middle">
+						<thead class="bg-light">
+							<tr>
+								<th class="border-0">S.No</th>
+								<th class="border-0">Payment ID</th>
+								
+								<th class="border-0">Customer</th>
+								<th class="border-0">Venue</th>
+								<th class="border-0">Amount</th>
+								<th class="border-0">Payment Date</th>
+								<th class="border-0">Payment Status</th>
+								<th class="border-0">Booking Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="payment, stat : ${allPayments}">
+								<td class="text-muted"
+									th:text="${(currentPage * (size != null ? size : 10)) + stat.count}">1</td>
+								<td class="fw-bold" th:text="${payment.paymentId}">1</td>
+								
+								<td th:text="${payment.booking.user.username}">username</td>
+								<td th:text="${payment.booking.venue.venueName}">Venue Name</td>
+								<td class="fw-bold"
+									th:classappend="${payment.booking.status == 'CANCELLED' ? 'text-danger' : 'text-success'}"
+									th:text="${'₹' + #numbers.formatDecimal(payment.paymentAmount, 1, 2)}">₹0.00</td>
+								<td
+									th:text="${payment.paymentDate != null ? #temporals.format(payment.paymentDate, 'yyyy-MM-dd HH:mm') : 'N/A'}">2024-01-01
+									10:00</td>
+
+								<td><span th:if="${payment.booking.status == 'CANCELLED'}"
+									class="badge bg-danger rounded-pill"> <i
+										class="fas fa-undo me-1"></i>REFUNDED
+								</span> <span
+									th:if="${payment.booking.status != 'CANCELLED' && payment.paymentStatus == 'SUCCESS'}"
+									class="badge bg-success rounded-pill"> <i
+										class="fas fa-check-circle me-1"></i>SUCCESS
+								</span> <span
+									th:if="${payment.booking.status != 'CANCELLED' && payment.paymentStatus == 'PENDING'}"
+									class="badge bg-warning rounded-pill"> <i
+										class="fas fa-clock me-1"></i>PENDING
+								</span></td>
+
+								<td><span class="badge rounded-pill"
+									th:classappend="${payment.booking.status == 'CONFIRMED' ? 'bg-success' : (payment.booking.status == 'PENDING' ? 'bg-warning' : (payment.booking.status == 'COMPLETED' ? 'bg-info' : 'bg-danger'))}"
+									th:text="${payment.booking.status}">Status</span></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="d-flex justify-content-between align-items-center mt-4">
+					<div class="text-muted">
+						Showing <span th:text="${#lists.size(allPayments)}">0</span> of <span
+							th:text="${totalElements}">0</span> payments
+					</div>
+					<nav th:if="${totalPages > 1}" aria-label="Page navigation">
+						<ul class="pagination justify-content-center mb-0">
+							<li class="page-item"
+								th:classappend="${currentPage == 0} ? 'disabled'"><a
+								class="page-link"
+								th:href="@{/payments/admin(page=${currentPage - 1}, size=${size}, sortBy=${sortBy}, sortDir=${sortDir}, status=${currentStatus}, search=${currentSearch})}">Previous</a>
+							</li>
+							<li class="page-item"
+								th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+								th:classappend="${currentPage == i} ? 'active'"><a
+								class="page-link"
+								th:href="@{/payments/admin(page=${i}, size=${size}, sortBy=${sortBy}, sortDir=${sortDir}, status=${currentStatus}, search=${currentSearch})}"
+								th:text="${i + 1}">1</a></li>
+							<li class="page-item"
+								th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+								<a class="page-link"
+								th:href="@{/payments/admin(page=${currentPage + 1}, size=${size}, sortBy=${sortBy}, sortDir=${sortDir}, status=${currentStatus}, search=${currentSearch})}">Next</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+</html>

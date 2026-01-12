@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: content(~{::section})}">
+
+<head>
+    <title>Create Booking</title>
+</head>
+
+<body>
+    <section class="fade-in">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow border-0">
+                    <div class="card-body p-5">
+                        <h2 class="fw-bold mb-4">Confirm Booking</h2>
+                        <div class="alert alert-info mb-4">
+                            You are booking: <strong th:text="${booking.venue.venueName}">Venue</strong>
+                        </div>
+
+                        <div th:if="${error}" class="alert alert-danger" th:text="${error}">Error</div>
+
+                        <form th:action="@{/bookings/create}" th:object="${booking}" method="post">
+                            <!-- Helper to pass venueId -->
+                            <input type="hidden" name="venueId" th:value="${booking.venue.venueId}" />
+
+                            <div class="mb-4">
+                                <label for="eventDate" class="form-label fw-bold">Start Date</label>
+                                <input type="date" class="form-control" id="eventDate" th:field="*{eventDate}" 
+                                    th:min="${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}" required>
+                                <small class="text-muted">Booking starts from today</small>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="endDate" class="form-label fw-bold">End Date</label>
+                                <input type="date" class="form-control" id="endDate" th:field="*{endDate}" >
+                                <small class="text-muted">Select the last day of your booking</small>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="eventType" class="form-label fw-bold">Event Type</label>
+                                <select class="form-select" id="eventType" th:field="*{eventType}">
+                                    <option value="Wedding">Wedding</option>
+                                    <option value="Conference">Conference</option>
+                                    <option value="Birthday">Birthday</option>
+                                    <option value="Concert">Concert</option>
+                                    <option value="Corporate Event">Corporate Event</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+
+                            <div class="alert alert-info">
+                                <strong>Price:</strong> 
+                                <span th:text="${'₹' + booking.venue.pricePerDay}"></span> per day
+                                <br>
+                                <small>Total will be calculated based on number of days</small>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 btn-lg shadow-sm mb-3">Book Now</button>
+                            <a th:href="@{/venues}" class="btn btn-outline-secondary w-100 border-0">Cancel</a>
+                        </form>
+                        <script th:inline="javascript">
+                            $(document).ready(function() {
+                                var startDateInput = $('#eventDate');
+                                var endDateInput = $('#endDate');
+                                
+                                // Set start date to today
+                                var today = new Date().toISOString().split('T')[0];
+                                startDateInput.val(today);
+                                
+                                // Set minimum end date to start date
+                                startDateInput.on('change', function() {
+                                    endDateInput.attr('min', $(this).val());
+                                    if (endDateInput.val() && endDateInput.val() < $(this).val()) {
+                                        endDateInput.val($(this).val());
+                                    }
+                                });
+                                
+                                // Initialize min on page load
+                                if (startDateInput.val()) {
+                                    endDateInput.attr('min', startDateInput.val());
+                                }
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>

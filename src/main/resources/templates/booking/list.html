@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	th:replace="~{layout :: content(~{::section})}">
+
+<head>
+<title>Bookings</title>
+</head>
+
+<body>
+	<section class="fade-in">
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<h2 class="h3 mb-0 text-gray-800 fw-bold">Bookings</h2>
+		</div>
+
+		<!-- Search and Filter Bar -->
+		<div class="card shadow-sm border-0 mb-4">
+			<div class="card-body">
+				<form th:action="@{/bookings}" method="get" class="row g-3 align-items-end">
+					<div class="col-md-4">
+						<label class="form-label fw-bold text-muted">Search</label>
+						<input type="text" name="search" class="form-control" 
+							th:value="${currentSearch}" 
+							placeholder="Search by venue, username, or status...">
+					</div>
+					<div class="col-md-2">
+						<label class="form-label fw-bold text-muted">Status</label>
+						<select name="status" class="form-select">
+							<option value="" th:selected="${currentStatus == null || currentStatus == ''}">All Status</option>
+							<option value="PENDING" th:selected="${currentStatus == 'PENDING'}">Pending</option>
+							<option value="CONFIRMED" th:selected="${currentStatus == 'CONFIRMED'}">Confirmed</option>
+							<option value="COMPLETED" th:selected="${currentStatus == 'COMPLETED'}">Completed</option>
+							<option value="CANCELLED" th:selected="${currentStatus == 'CANCELLED'}">Cancelled</option>
+						</select>
+					</div>
+					<div class="col-md-2">
+						<label class="form-label fw-bold text-muted">Sort By</label>
+						<select name="sortBy" class="form-select">
+							<option value="bookingId" th:selected="${sortBy == 'bookingId'}">Booking ID</option>
+							<option value="eventDate" th:selected="${sortBy == 'eventDate'}">Start Date</option>
+							<option value="endDate" th:selected="${sortBy == 'endDate'}">End Date</option>
+							<option value="status" th:selected="${sortBy == 'status'}">Status</option>
+						</select>
+					</div>
+					<div class="col-md-2">
+						<label class="form-label fw-bold text-muted">Order</label>
+						<select name="sortDir" class="form-select">
+							<option value="desc" th:selected="${sortDir == 'desc'}">Descending</option>
+							<option value="asc" th:selected="${sortDir == 'asc'}">Ascending</option>
+						</select>
+					</div>
+					<div class="col-md-2">
+						<label class="form-label fw-bold text-muted">Page Size</label>
+						<select name="size" class="form-select">
+							<option value="5" th:selected="${size == 5}">5</option>
+							<option value="10" th:selected="${size == 10}">10</option>
+							<option value="20" th:selected="${size == 20}">20</option>
+							<option value="50" th:selected="${size == 50}">50</option>
+						</select>
+					</div>
+					<div class="col-md-12">
+						<button type="submit" class="btn btn-primary me-2"><i class="fas fa-search me-1"></i>Search</button>
+						<a th:href="@{/bookings}" class="btn btn-secondary"><i class="fas fa-redo me-1"></i>Reset</a>
+					</div>
+					<input type="hidden" name="page" value="0" />
+				</form>
+			</div>
+		</div>
+
+		<div class="card shadow border-0">
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table table-hover align-middle">
+						<thead class="bg-light text-primary">
+							<tr>
+								<th class="border-0">S.No</th>
+								<th class="border-0">Booking Id</th>
+								<th class="border-0">Venue</th>
+								<th class="border-0">Start Date</th>
+								<th class="border-0">End Date</th>
+								<th class="border-0">Type</th>
+								<th class="border-0">Status</th>
+								<th class="border-0">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="booking, iterStat : ${bookings}">
+								<td class="fw-bold"
+									th:text="${(currentPage * (size != null ? size : 10)) + iterStat.count}">1</td>
+								<td th:text="${booking.bookingId}">Venue</td>	
+								<td th:text="${booking.venue.venueName}">Venue</td>
+								<td
+									th:text="${#temporals.format(booking.eventDate, 'yyyy-MM-dd')}">Start
+									Date</td>
+								<td
+									th:text="${booking.endDate != null ? #temporals.format(booking.endDate, 'yyyy-MM-dd') : #temporals.format(booking.eventDate, 'yyyy-MM-dd')}">End
+									Date</td>
+								<td><span class="badge bg-light text-dark border"
+									th:text="${booking.eventType}">Type</span></td>
+								<td><span class="badge rounded-pill"
+									th:classappend="${booking.status == 'CONFIRMED' ? 'bg-success' : (booking.status == 'PENDING' ? 'bg-warning' : (booking.status == 'COMPLETED' ? 'bg-info' : 'bg-danger'))}"
+									th:text="${booking.status}">Status</span></td>
+								<td><span th:if="${booking.status == 'PENDING'}"> 
+    
+    <a th:if="${#authorization.expression('hasRole(''CUSTOMER'')') or 
+              (#authorization.expression('hasAnyRole(''ADMIN'', ''EVENT_MANAGER'')') and #authentication.name == booking.user.username)}"
+       th:href="@{/payments/pay/{id}(id=${booking.bookingId})}"
+       class="btn btn-sm btn-success shadow-sm fw-bold">
+       Pay Now
+    </a>
+
+    <a th:href="@{/bookings/cancel/{id}(id=${booking.bookingId})}"
+       class="btn btn-sm btn-outline-danger ms-1"> 
+       <i class="fas fa-times me-1"></i> Cancel
+    </a>
+</span> <span th:if="${booking.status == 'CONFIRMED'}"> <a
+										th:href="@{/bookings/complete/{id}(id=${booking.bookingId})}"
+										class="btn btn-sm btn-outline-success"
+										sec:authorize="hasAnyRole('ADMIN', 'EVENT_MANAGER')"> <i
+											class="fas fa-check me-1"></i> Complete
+									</a> <a th:href="@{/bookings/cancel/{id}(id=${booking.bookingId})}"
+										class="btn btn-sm btn-outline-danger ms-1"> <i
+											class="fas fa-times me-1"></i> Cancel
+									</a>
+								</span></td>
+							</tr>
+							<tr th:if="${#lists.isEmpty(bookings)}">
+								<td colspan="7" class="text-center py-4 text-muted">No
+									bookings found matching the criteria.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="d-flex justify-content-between align-items-center mt-4">
+					<div class="text-muted">
+						Showing <span th:text="${#lists.size(bookings)}">0</span> of <span th:text="${totalElements}">0</span> bookings
+					</div>
+					<nav th:if="${totalPages > 1}" aria-label="Page navigation">
+						<ul class="pagination justify-content-center mb-0">
+							<li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+								<a class="page-link" th:href="@{/bookings(page=${currentPage - 1}, size=${size}, sortBy=${sortBy}, sortDir=${sortDir}, status=${currentStatus}, search=${currentSearch})}">Previous</a>
+							</li>
+							<li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${currentPage == i} ? 'active'">
+								<a class="page-link" th:href="@{/bookings(page=${i}, size=${size}, sortBy=${sortBy}, sortDir=${sortDir}, status=${currentStatus}, search=${currentSearch})}" th:text="${i + 1}">1</a>
+							</li>
+							<li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+								<a class="page-link" th:href="@{/bookings(page=${currentPage + 1}, size=${size}, sortBy=${sortBy}, sortDir=${sortDir}, status=${currentStatus}, search=${currentSearch})}">Next</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+
+
+
+	</section>
+</body>
+</html>

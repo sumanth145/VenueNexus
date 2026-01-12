@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: content(~{::section})}">
+
+<head>
+    <title>Secure Payment</title>
+</head>
+
+<body>
+    <section class="fade-in">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-header bg-success text-white py-3">
+                            <h4 class="mb-0 fw-bold">
+                                <i class="fas fa-lock me-2"></i>Secure Payment
+                            </h4>
+                        </div>
+
+                        <div class="card-body p-4">
+                            <form th:action="@{/payments/process}" th:object="${payment}" method="post">
+                                <input type="hidden" name="bookingId" th:value="${payment.booking.bookingId}" />
+
+                                <div class="mb-4">
+                                    <label class="form-label text-muted small text-uppercase fw-bold">Booking Details</label>
+                                    <div class="bg-light p-3 rounded border">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="text-secondary">Venue:</span>
+                                            <span class="fw-bold" th:text="${payment.booking.venue.venueName}">Grand Ballroom</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span class="text-secondary">Amount Due:</span>
+                                            <span class="fw-bold text-success" th:text="'₹' + ${payment.paymentAmount}">₹0.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="cardNumber" class="form-label fw-bold">Card Number</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-credit-card"></i></span>
+                                        <input type="text" 
+                                               id="cardNumber"
+                                               class="form-control" 
+                                               placeholder="16-digit card number" 
+                                               pattern="\d{16}" 
+                                               maxlength="16" 
+                                               oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                                               title="Please enter exactly 16 digits" 
+                                               required>
+                                    </div>
+                                    <div class="form-text small">Enter digits only, no spaces or dashes.</div>
+                                </div>
+
+                                <div class="row mb-4">
+                                    <div class="col-md-7 mb-3 mb-md-0">
+                                        <label class="form-label fw-bold">Expiry Date</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                            <input type="month" 
+                                                   class="form-control" 
+                                                   required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-5">
+                                        <label class="form-label fw-bold">CVV</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-key"></i></span>
+                                            <input type="password" 
+                                                   class="form-control" 
+                                                   placeholder="***" 
+                                                   inputmode="numeric"
+                                                   pattern="\d{3}" 
+                                                   maxlength="3" 
+                                                   oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                                                   title="Enter the 3-digit code" 
+                                                   required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-success w-100 btn-lg fw-bold shadow-sm">
+                                    Process Payment
+                                </button>
+                                
+                                <div class="text-center mt-3 text-muted small">
+                                    <i class="fas fa-shield-alt me-1"></i> Your data is encrypted and secure.
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       
+    </section>
+</body>
+
+</html>
