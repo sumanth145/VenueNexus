@@ -149,14 +149,14 @@
                                   class="text-muted small">-</span>
                         </td>
 
-                        <td>
-                            <a th:if="${ticket.ticketStatus == 'OPEN'}"
-                               sec:authorize="hasAnyRole('ADMIN','EVENT_MANAGER')"
-                               th:href="@{/support/resolve/{id}(id=${ticket.ticketId})}"
-                               class="btn btn-sm btn-success shadow-sm">
-                                Resolve
-                            </a>
-                        </td>
+                       <td><a th:if="${ticket.ticketStatus == 'OPEN'}"
+									sec:authorize="hasRole('ADMIN')"
+									th:href="@{/support/resolve/{id}(id=${ticket.ticketId})}"
+									class="btn btn-sm btn-success shadow-sm">Resolve</a> <a
+									th:if="${ticket.ticketStatus == 'OPEN' && ticket.customer.role.name() != 'EVENT_MANAGER'}"
+									sec:authorize="hasRole('EVENT_MANAGER')"
+									th:href="@{/support/resolve/{id}(id=${ticket.ticketId})}"
+									class="btn btn-sm btn-success shadow-sm">Resolve</a></td>
                     </tr>
 
                     <tr th:if="${#lists.isEmpty(tickets)}">

@@ -18,7 +18,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.List;
+import java.time.LocalDate;
 /**
  * Controller for handling booking-related HTTP requests.
  * Provides endpoints for listing, creating, and managing bookings with pagination, sorting, filtering, and search.
@@ -71,24 +72,26 @@ public class BookingController {
             
             // Create Sort object based on sortBy and sortDir
             Sort sort = sortDir.equalsIgnoreCase("asc") 
-                ? Sort.by(sortBy).ascending() 
-                : Sort.by(sortBy).descending();
+                ? Sort.by(sortBy).ascending()  // sort by {column} ascending order
+                : Sort.by(sortBy).descending(); // sort by {column} descending order
             
             // Define paging and sorting
             Pageable pageable = PageRequest.of(page, size, sort);
             
             // Auto-mark bookings as COMPLETED if current date passes end date
-            java.util.List<Booking> allBookings = bookingService.getTotalBookings();
-            java.time.LocalDate currentDate = java.time.LocalDate.now();
+            List<Booking> allBookings = bookingService.getTotalBookings();
+            
+            LocalDate currentDate = LocalDate.now();
             for (Booking booking : allBookings) {
                 if (!"COMPLETED".equals(booking.getStatus()) && 
-                    !"CANCELLED".equals(booking.getStatus()) &&
+                    !"CANCELLED".equals(booking.getStatus()) && 
                     booking.getEndDate() != null &&
                     currentDate.isAfter(booking.getEndDate())) {
                     logger.debug("Auto-marking booking {} as COMPLETED", booking.getBookingId());
                     bookingService.updateStatus(booking.getBookingId(), "COMPLETED");
                 }
             }
+            
             
             // Admins and managers see all, customers see theirs
             Page<Booking> bookingPage;
@@ -172,7 +175,7 @@ public class BookingController {
             
             // Set start date to current date if not provided
             if (booking.getEventDate() == null) {
-                booking.setEventDate(java.time.LocalDate.now());
+                booking.setEventDate(LocalDate.now());
             }
             
             // Validate end date is after start date
@@ -215,7 +218,7 @@ public class BookingController {
         
         return "redirect:/bookings";
     }
-
+  
     /**
      * Marks a booking as completed.
      * 

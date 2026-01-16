@@ -5,9 +5,9 @@ import com.venue.management.entity.Role;
 import com.venue.management.repository.UserRepository;
 import com.venue.management.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+//import org.springframework.data.domain.PageRequest;
+//import org.springframework.data.domain.Pageable;
+//import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -40,14 +40,10 @@ public class DashboardController {
 
 	    return switch (user.getRole()) {
 	        case ADMIN -> {
-	            model.addAttribute("venues", venueService.getAllVenues());
-	            
-	            // Fix: Pass default Pageable to get the first 10 bookings
-	            Pageable topTen = PageRequest.of(0, 10, Sort.by("bookingId").descending());
-	            model.addAttribute("bookings", bookingService.getAllBookings(null, null, topTen).getContent());
-	            
+	            model.addAttribute("venues", venueService.getAllVenues());          
+	            model.addAttribute("bookings",bookingService.getBookingsCount());
 	            model.addAttribute("openTicketsCount", supportTicketService.countOpenTickets());
-	            List<User> allUsers = (List<User>) userRepository.findAll();
+	            List<User> allUsers = userRepository.findAll();
 	            model.addAttribute("pendingApprovals", allUsers.stream()
 	                    .filter(u -> u.getRole() == Role.EVENT_MANAGER && !u.isEnabled()).toList());
 	            yield "dashboard/admin";

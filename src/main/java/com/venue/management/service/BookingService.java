@@ -26,4 +26,5 @@ public interface BookingService {
     Booking createBooking(Booking booking);
     Booking updateStatus(Long id, String status);
     Booking getBookingById(Long id);
+    Long getBookingsCount();
 }

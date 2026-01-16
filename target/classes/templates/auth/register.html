@@ -1,148 +1,255 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - EVM</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <style>
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background-color: #1a1a2e; /* Fallback color */
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register | Venue Nexus</title>
 
-        .form-signin {
-            width: 100%;
-            max-width: 450px;
-            padding: 15px;
-            margin: auto;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        .auth-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
+<style>
+:root {
+    --brand-primary: #6C6CF5;
+    --brand-primary-dark: #5B5BEA;
+    --brand-glow: rgba(108,108,245,0.15);
+}
 
-        .form-floating label {
-            color: #6c757d;
-        }
+* {
+    font-family: 'Inter', sans-serif;
+}
 
-        .error-list {
-            text-align: left;
-            margin-bottom: 0;
-            font-size: 0.9rem;
-        }
-    </style>
+body {
+    min-height: 100vh;
+    background: linear-gradient(120deg, #eef2ff, #f8fafc);
+    display: flex;
+}
+
+/* MAIN WRAPPER */
+.auth-wrapper {
+    display: flex;
+    width: 100%;
+}
+
+/* LEFT INFO PANEL */
+.auth-info {
+    flex: 1;
+    padding: 80px;
+    background: linear-gradient(
+        160deg,
+        var(--brand-primary-dark),
+        var(--brand-primary)
+    );
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.auth-info h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.auth-info p {
+    font-size: 1rem;
+    opacity: 0.9;
+    max-width: 400px;
+}
+
+/* RIGHT FORM PANEL */
+.auth-form {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* CARD */
+.form-card {
+    width: 100%;
+    max-width: 420px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 35px;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.08);
+}
+
+/* FORM */
+.form-card h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.form-control,
+.form-select {
+    height: 44px;
+    border-radius: 6px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 3px var(--brand-glow);
+}
+
+/* BUTTON */
+.btn-primary {
+    background: var(--brand-primary);
+    border: none;
+    height: 44px;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+.btn-primary:hover {
+    background: var(--brand-primary-dark);
+}
+
+/* FOOTER */
+.form-footer {
+    margin-top: 18px;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.form-footer a {
+    color: var(--brand-primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .auth-info {
+        display: none;
+    }
+}
+</style>
 </head>
 
-<body class="auth-bg">
-    <main class="form-signin text-center">
-        <div class="auth-card shadow-lg p-5">
-            <h1 class="h3 mb-4 fw-bold text-white">Create Account</h1>
+<body>
 
-            <div id="jsErrorBox" class="alert alert-danger d-none" role="alert">
-                <ul id="errorList" class="error-list"></ul>
+<div class="auth-wrapper">
+
+    <!-- LEFT PANEL -->
+    <div class="auth-info">
+        <h1>Venue Nexus</h1>
+        <p>
+            Manage venues, bookings, and events effortlessly.
+            Create your account and get started in minutes.
+        </p>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="auth-form">
+        <div class="form-card">
+
+            <h2>Create Account</h2>
+
+            <div id="jsErrorBox" class="alert alert-danger d-none">
+                <ul id="errorList" class="mb-0"></ul>
             </div>
 
             <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-            <form id="registerForm" th:action="@{/register}" th:object="${user}" method="post">
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="username" th:field="*{username}" placeholder="Username"
-                        required>
-                    <label for="username">Username</label>
+            <form id="registerForm"
+                  th:action="@{/register}"
+                  th:object="${user}"
+                  method="post">
+
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" th:field="*{username}" class="form-control" required>
                 </div>
 
-                <div class="form-floating mb-3">
-                    <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="Email"
-                        required>
-                    <label for="email">Email address</label>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" th:field="*{email}" class="form-control" required>
                 </div>
 
-                <div class="form-floating mb-3">
-                    <input type="password" class="form-control" id="password" th:field="*{password}"
-                        placeholder="Password" required>
-                    <label for="password">Password</label>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" th:field="*{password}" class="form-control" required>
                 </div>
 
-                <div class="form-floating mb-3">
-                    <select class="form-select" id="role" th:field="*{role}">
+                <div class="form-group">
+                    <label>Role</label>
+                    <select th:field="*{role}" class="form-select">
                         <option value="CUSTOMER">Customer</option>
                         <option value="EVENT_MANAGER">Event Manager</option>
-       
                     </select>
-                    <label for="role">Role</label>
                 </div>
 
-                <button class="w-100 btn btn-lg btn-primary mb-3 fw-bold" type="submit">Register</button>
+                <button class="btn btn-primary w-100 mt-2" type="submit">
+                    Register
+                </button>
             </form>
-            
-            <p class="text-white-50">Already have an account? <a th:href="@{/login}" class="text-white fw-bold">Login</a></p>
+
+            <div class="form-footer">
+                Already have an account?
+                <a th:href="@{/login}">Login</a>
+            </div>
+
         </div>
-    </main>
+    </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('#registerForm').on('submit', function (e) {
-                const email = $('#email').val();
-                const password = $('#password').val();
-                const $errorBox = $('#jsErrorBox');
-                const $errorList = $('#errorList');
-                
-                let messages = [];
+</div>
 
-                // Email validation
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(email)) {
-                    messages.push("Please enter a valid email address.");
-                }
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+    $('#registerForm').on('submit', function (e) {
+        const email = $('#email').val();
+        const password = $('#password').val();
+        const $errorBox = $('#jsErrorBox');
+        const $errorList = $('#errorList');
 
-                // Password Length Check
-                if (password.length < 8) {
-                    messages.push("Password must be at least 8 characters long.");
-                }
+        let messages = [];
 
-                // Password Number Check
-                if (!/\d/.test(password)) {
-                    messages.push("Password must contain at least one number.");
-                }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            messages.push("Please enter a valid email address.");
+        }
 
-                // Password Special Character Check
-                const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
-                if (!specialCharRegex.test(password)) {
-                    messages.push("Password must contain at least one special symbol.");
-                }
+        if (password.length < 8) {
+            messages.push("Password must be at least 8 characters long.");
+        }
 
-                // If validation fails
-                if (messages.length > 0) {
-                    e.preventDefault(); // Prevent form submission
-                    
-                    $errorList.empty(); // Clear previous errors
-                    messages.forEach(function (msg) {
-                        $errorList.append('<li>' + msg + '</li>');
-                    });
-                    
-                    $errorBox.removeClass('d-none'); // Show the error box
-                    
-                    // Smooth scroll to top of card to see errors
-                    $('html, body').animate({ scrollTop: ($('.auth-card').offset().top - 20) }, 'fast');
-                }
-            });
+        if (!/\d/.test(password)) {
+            messages.push("Password must contain at least one number.");
+        }
 
-            // Hide error box when user starts typing again
-            $('input').on('input', function() {
-                $('#jsErrorBox').addClass('d-none');
-            });
-        });
-    </script>
+        if (!/[!@#$%^&*(),.?\":{}|<>]/.test(password)) {
+            messages.push("Password must contain at least one special symbol.");
+        }
+
+        if (messages.length > 0) {
+            e.preventDefault();
+            $errorList.empty();
+            messages.forEach(msg => $errorList.append('<li>' + msg + '</li>'));
+            $errorBox.removeClass('d-none');
+        }
+    });
+
+    $('input').on('input', function () {
+        $('#jsErrorBox').addClass('d-none');
+    });
+});
+</script>
+
 </body>
 </html>

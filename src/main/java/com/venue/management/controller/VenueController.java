@@ -33,7 +33,7 @@ import java.util.UUID;
 @RequestMapping("/venues")
 public class VenueController {
 
-    private static final Logger logger = LoggerFactory.getLogger(VenueController.class);
+    private static final Logger log = LoggerFactory.getLogger(VenueController.class);
 
     @Autowired
     private VenueService venueService;
@@ -51,12 +51,12 @@ public class VenueController {
      */
     @GetMapping
     public String listVenues(@RequestParam(defaultValue = "0") int page,
-                            @RequestParam(defaultValue = "10") int size,
+                            @RequestParam(defaultValue = "6") int size,
                             @RequestParam(defaultValue = "venueId") String sortBy,
                             @RequestParam(defaultValue = "desc") String sortDir,
                             @RequestParam(required = false) String search,
                             Model model) {
-        logger.info("Listing venues with page: {}, size: {}, sortBy: {}, sortDir: {}, search: {}", 
+        log.info("Listing venues with page: {}, size: {}, sortBy: {}, sortDir: {}, search: {}", 
             page, size, sortBy, sortDir, search);
         
         try {
@@ -78,10 +78,10 @@ public class VenueController {
             model.addAttribute("sortDir", sortDir);
             model.addAttribute("size", size);
             
-            logger.info("Displayed {} venues (page {} of {})", 
+            log.info("Displayed {} venues (page {} of {})", 
                 venuePage.getContent().size(), page + 1, venuePage.getTotalPages());
         } catch (Exception e) {
-            logger.error("Error listing venues: {}", e.getMessage(), e);
+            log.error("Error listing venues: {}", e.getMessage(), e);
             model.addAttribute("error", "Error loading venues: " + e.getMessage());
             // Fallback to non-paginated list
             model.addAttribute("venues", venueService.getAllVenues());
@@ -98,7 +98,7 @@ public class VenueController {
      */
     @GetMapping("/add")
     public String addVenuePage(Model model) {
-        logger.debug("Displaying venue creation page");
+        log.debug("Displaying venue creation page");
         model.addAttribute("venue", new Venue());
         return "venue/add";
     }
@@ -115,13 +115,13 @@ public class VenueController {
     public String addVenue(@ModelAttribute Venue venue,
                           @RequestParam("imageFile") MultipartFile imageFile,
                           RedirectAttributes redirectAttributes) {
-        logger.info("Saving venue: {}", venue.getVenueName());
+        log.info("Saving venue: {}", venue.getVenueName());
         try {
             if (venue.getVenueId() == null) {
-                logger.info("Creating new venue: {}", venue.getVenueName());
+                log.info("Creating new venue: {}", venue.getVenueName());
                 venue.setStatus("AVAILABLE");
             } else {
-                logger.info("Updating venue ID: {}, name: {}", venue.getVenueId(), venue.getVenueName());
+                log.info("Updating venue ID: {}, name: {}", venue.getVenueId(), venue.getVenueName());
                 // When editing, preserve the existing status if not set
                 if (venue.getStatus() == null || venue.getStatus().isEmpty()) {
                     Venue existingVenue = venueService.getVenueById(venue.getVenueId())
@@ -132,7 +132,7 @@ public class VenueController {
 
             // Handle image upload
             if (imageFile != null && !imageFile.isEmpty()) {
-                logger.debug("Saving image file: {}", imageFile.getOriginalFilename());
+                log.debug("Saving image file: {}", imageFile.getOriginalFilename());
                 String imagePath = saveImage(imageFile);
                 venue.setImagePath(imagePath);
             } else if (venue.getVenueId() != null) {
@@ -144,10 +144,10 @@ public class VenueController {
 
             venueService.saveVenue(venue);
             redirectAttributes.addFlashAttribute("success", "Venue saved successfully!");
-            logger.info("Venue saved successfully with ID: {}", venue.getVenueId());
+            log.info("Venue saved successfully with ID: {}", venue.getVenueId());
             return "redirect:/venues";
         } catch (Exception e) {
-            logger.error("Error saving venue: {}", e.getMessage(), e);
+            log.error("Error saving venue: {}", e.getMessage(), e);
             redirectAttributes.addFlashAttribute("error", "Error saving venue: " + e.getMessage());
             return "redirect:/venues/add";
         }
@@ -162,14 +162,14 @@ public class VenueController {
      */
     @GetMapping("/edit/{id}")
     public String editVenuePage(@PathVariable Long id, Model model) {
-        logger.info("Displaying edit page for venue ID: {}", id);
+        log.info("Displaying edit page for venue ID: {}", id);
         
         try {
             Venue venue = venueService.getVenueById(id)
                 .orElseThrow(() -> new RuntimeException("Venue not found"));
             model.addAttribute("venue", venue);
         } catch (Exception e) {
-            logger.error("Error loading venue for editing: {}", e.getMessage(), e);
+            log.error("Error loading venue for editing: {}", e.getMessage(), e);
             model.addAttribute("error", "Error loading venue: " + e.getMessage());
             return "redirect:/venues";
         }
@@ -186,7 +186,7 @@ public class VenueController {
      */
     @GetMapping("/maintenance/{id}")
     public String markAsMaintenance(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        logger.info("Marking venue {} as maintenance", id);
+        log.info("Marking venue {} as maintenance", id);
         
         try {
             Venue venue = venueService.getVenueById(id)
@@ -194,9 +194,9 @@ public class VenueController {
             venue.setStatus("MAINTENANCE");
             venueService.saveVenue(venue);
             redirectAttributes.addFlashAttribute("success", "Venue marked as maintenance successfully!");
-            logger.info("Venue {} marked as maintenance successfully", id);
+            log.info("Venue {} marked as maintenance successfully", id);
         } catch (Exception e) {
-            logger.error("Error marking venue as maintenance: {}", e.getMessage(), e);
+            log.error("Error marking venue as maintenance: {}", e.getMessage(), e);
             redirectAttributes.addFlashAttribute("error", "Error updating venue status: " + e.getMessage());
         }
         return "redirect:/venues/edit/" + id;
@@ -211,7 +211,7 @@ public class VenueController {
      */
     @GetMapping("/available/{id}")
     public String markAsAvailable(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        logger.info("Marking venue {} as available", id);
+        log.info("Marking venue {} as available", id);
         
         try {
             Venue venue = venueService.getVenueById(id)
@@ -219,9 +219,9 @@ public class VenueController {
             venue.setStatus("AVAILABLE");
             venueService.saveVenue(venue);
             redirectAttributes.addFlashAttribute("success", "Venue marked as available successfully!");
-            logger.info("Venue {} marked as available successfully", id);
+            log.info("Venue {} marked as available successfully", id);
         } catch (Exception e) {
-            logger.error("Error marking venue as available: {}", e.getMessage(), e);
+            log.error("Error marking venue as available: {}", e.getMessage(), e);
             redirectAttributes.addFlashAttribute("error", "Error updating venue status: " + e.getMessage());
         }
         return "redirect:/venues/edit/" + id;
@@ -236,7 +236,7 @@ public class VenueController {
      */
     @PostMapping("/delete/{id}")
     public String deleteVenue(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        logger.info("Deleting venue ID: {}", id);
+        log.info("Deleting venue ID: {}", id);
         
         try {
             Venue venue = venueService.getVenueById(id)
@@ -244,15 +244,15 @@ public class VenueController {
             
             // Delete image file if exists
             if (venue.getImagePath() != null && !venue.getImagePath().isEmpty()) {
-                logger.debug("Deleting image file: {}", venue.getImagePath());
+                log.debug("Deleting image file: {}", venue.getImagePath());
                 deleteImage(venue.getImagePath());
             }
             
             venueService.deleteVenue(id);
             redirectAttributes.addFlashAttribute("success", "Venue deleted successfully!");
-            logger.info("Venue {} deleted successfully", id);
+            log.info("Venue {} deleted successfully", id);
         } catch (Exception e) {
-            logger.error("Error deleting venue: {}", e.getMessage(), e);
+            log.error("Error deleting venue: {}", e.getMessage(), e);
             redirectAttributes.addFlashAttribute("error", "Error deleting venue: " + e.getMessage());
         }
         return "redirect:/venues";
@@ -269,7 +269,7 @@ public class VenueController {
         // Create upload directory if it doesn't exist
         Path uploadPath = Paths.get("src/main/resources/static/images");
         if (!Files.exists(uploadPath)) {
-            logger.debug("Creating upload directory: {}", uploadPath);
+            log.debug("Creating upload directory: {}", uploadPath);
             Files.createDirectories(uploadPath);
         }
 
@@ -283,7 +283,7 @@ public class VenueController {
         // Save file
         Path filePath = uploadPath.resolve(filename);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-        logger.debug("Image saved successfully: {}", filename);
+        log.debug("Image saved successfully: {}", filename);
 
         // Return relative path for database storage
         return "/images/" + filename;
@@ -299,11 +299,11 @@ public class VenueController {
             if (imagePath != null && !imagePath.isEmpty()) {
                 Path filePath = Paths.get("src/main/resources/static" + imagePath);
                 Files.deleteIfExists(filePath);
-                logger.debug("Image deleted successfully: {}", imagePath);
+                log.debug("Image deleted successfully: {}", imagePath);
             }
         } catch (IOException e) {
             // Log error but don't fail the delete operation
-            logger.error("Error deleting image file {}: {}", imagePath, e.getMessage(), e);
+            log.error("Error deleting image file {}: {}", imagePath, e.getMessage(), e);
         }
     }
 }

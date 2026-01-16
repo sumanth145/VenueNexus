@@ -4,21 +4,22 @@ import com.venue.management.entity.SupportTicket;
 import com.venue.management.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+//import org.springframework.data.repository.CrudRepository;
+//import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 /**
  * Repository interface for SupportTicket entity operations.
- * Extends both CrudRepository and PagingAndSortingRepository to provide CRUD and pagination/sorting capabilities.
+ * Extends JpaRepository to provide CRUD and pagination/sorting capabilities.
  * 
  * @author Event Venue Management System
  * @version 1.0
  */
 @Repository
-public interface SupportTicketRepository extends CrudRepository<SupportTicket, Long>, PagingAndSortingRepository<SupportTicket, Long> {
+public interface SupportTicketRepository extends JpaRepository<SupportTicket, Long> {
     List<SupportTicket> findByCustomer(User customer);
     long countByTicketStatus(String ticketStatus);
     

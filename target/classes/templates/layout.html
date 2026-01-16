@@ -75,22 +75,6 @@ body {
 				style="color: var(--primary-color); font-weight: 700; letter-spacing: -1px;">Venue Nexus</span>
 			</a>
 
-			<!-- Search Bar (Center) -->
-			<!-- <div class="d-none d-md-block mx-auto">
-                <div class="input-group rounded-pill shadow-sm hover-shadow transition-all"
-                    style="border: 1px solid #ddd; padding: 4px 4px 4px 20px; width: 400px; cursor: pointer;">
-                    <span class="d-flex align-items-center text-dark fw-bold" style="font-size: 0.9rem;">Anywhere</span>
-                    <span class="mx-3 text-secondary">|</span>
-                    <span class="d-flex align-items-center text-dark fw-bold" style="font-size: 0.9rem;">Any week</span>
-                    <span class="mx-3 text-secondary">|</span>
-                    <input type="text" class="border-0 bg-transparent flex-grow-1" placeholder="Add guests"
-                        style="outline: none; font-size: 0.9rem; color: #717171;">
-                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center ms-2"
-                        style="width: 32px; height: 32px;">
-                        <i class="fas fa-search text-white" style="font-size: 0.8rem;"></i>
-                    </div>
-                </div>
-            </div> -->
 
 			<!-- User Menu (Right) -->
 			<div class="d-flex align-items-center gap-3">
@@ -143,34 +127,6 @@ body {
 									out</button>
 							</form>
 						</li>
-					</ul>
-				</div>
-
-				<!-- Guest User Dropdown -->
-				<div class="dropdown" sec:authorize="!isAuthenticated()">
-					<button
-						class="btn border rounded-pill p-1 ps-3 d-flex align-items-center gap-2 hover-shadow"
-						type="button" data-bs-toggle="dropdown" aria-expanded="false"
-						style="border-color: #ddd !important;">
-						<i class="fas fa-bars text-secondary"></i>
-						<div
-							class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center"
-							style="width: 30px; height: 30px;">
-							<i class="fas fa-user-circle fa-lg text-white"></i>
-						</div>
-					</button>
-					<ul
-						class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 py-2"
-						style="border-radius: 12px; min-width: 240px;">
-						<li><a class="dropdown-item py-2 fw-bold" th:href="@{/login}">Log
-								in</a></li>
-						<li><a class="dropdown-item py-2" th:href="@{/register}">Sign
-								up</a></li>
-						<li>
-							<hr class="dropdown-divider">
-						</li>
-						<li><a class="dropdown-item py-2" href="#">Host your home</a></li>
-						<li><a class="dropdown-item py-2" href="#">Help Center</a></li>
 					</ul>
 				</div>
 
@@ -233,10 +189,6 @@ body {
 		</div>
 	</div>
 
-	<!-- Guest Layout (No sidebar, full width centered) -->
-	<div sec:authorize="!isAuthenticated()" class="content-container">
-		<div th:replace="${content}"></div>
-	</div>
 
 
 

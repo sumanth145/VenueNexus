@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import java.time.LocalDate;
 
 /**
  * Service implementation for Booking operations.
@@ -49,7 +50,7 @@ public class BookingServiceImpl implements BookingService {
 		if (search != null && !search.trim().isEmpty()) {
 			if (status != null && !status.isEmpty() && !status.equalsIgnoreCase("ALL")) {
 				Page<Booking> searchResults = bookingRepository.findByVenue_VenueNameContainingIgnoreCaseOrUser_UsernameContainingIgnoreCaseOrStatusContainingIgnoreCase(
-					search, search, search, pageable);
+					search, search, search, pageable); // venueName,userName and Status.
 				logger.info("Found {} bookings matching search '{}' and status '{}'", 
 					searchResults.getTotalElements(), search, status);
 				// Filter results to match the status
@@ -202,7 +203,7 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public List<Booking> getTotalBookings() {
 		logger.debug("Getting total bookings count");
-		List<Booking> bookings = (List<Booking>) bookingRepository.findAll();
+		List<Booking> bookings = bookingRepository.findAll();
 		logger.info("Retrieved {} total bookings", bookings.size());
 		return bookings;
 	}
@@ -216,11 +217,17 @@ public class BookingServiceImpl implements BookingService {
 	 * @param end2 End date of second range
 	 * @return true if ranges overlap, false otherwise
 	 */
-	private boolean isDateRangeOverlapping(java.time.LocalDate start1, java.time.LocalDate end1,
-			java.time.LocalDate start2, java.time.LocalDate end2) {
+	private boolean isDateRangeOverlapping(LocalDate start1, LocalDate end1,
+			LocalDate start2, LocalDate end2) {
 		// Standard interval overlap logic: 
 		// Two ranges overlap if (StartA <= EndB) and (EndA >= StartB)
 		return !start1.isAfter(end2) && !end1.isBefore(start2);
+	}
+
+	@Override
+	public Long getBookingsCount() {
+		
+		return bookingRepository.count();
 	}
 
 }

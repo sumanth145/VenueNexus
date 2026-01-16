@@ -11,24 +11,60 @@
 	<section class="fade-in">
 		<div class="d-flex justify-content-between align-items-center mb-4">
 			<h2 class="h3 mb-0 text-gray-800 fw-bold">Bookings</h2>
+		</div>
 
-			<form th:action="@{/bookings}" method="get"
-				class="d-flex align-items-center">
-				<label class="me-2 fw-bold text-muted">Filter:</label> <select
-					name="status" class="form-select form-select-sm shadow-sm"
-					onchange="this.form.submit()" style="width: auto;">
-					<option value=""
-						th:selected="${currentStatus == null || currentStatus == ''}">All
-						Status</option>
-					<option value="PENDING" th:selected="${currentStatus == 'PENDING'}">Pending</option>
-					<option value="CONFIRMED"
-						th:selected="${currentStatus == 'CONFIRMED'}">Confirmed</option>
-					<option value="COMPLETED"
-						th:selected="${currentStatus == 'COMPLETED'}">Completed</option>
-					<option value="CANCELLED"
-						th:selected="${currentStatus == 'CANCELLED'}">Cancelled</option>
-				</select> <input type="hidden" name="sort" th:value="${currentSort}" />
-			</form>
+		<!-- Search and Filter Bar -->
+		<div class="card shadow-sm border-0 mb-4">
+			<div class="card-body">
+				<form th:action="@{/bookings}" method="get" class="row g-3 align-items-end">
+					<div class="col-md-4">
+						<label class="form-label fw-bold text-muted">Search</label>
+						<input type="text" name="search" class="form-control" 
+							th:value="${currentSearch}" 
+							placeholder="Search by venue, username, or status...">
+					</div>
+					<div class="col-md-2">
+						<label class="form-label fw-bold text-muted">Status</label>
+						<select name="status" class="form-select">
+							<option value="" th:selected="${currentStatus == null || currentStatus == ''}">All Status</option>
+							<option value="PENDING" th:selected="${currentStatus == 'PENDING'}">Pending</option>
+							<option value="CONFIRMED" th:selected="${currentStatus == 'CONFIRMED'}">Confirmed</option>
+							<option value="COMPLETED" th:selected="${currentStatus == 'COMPLETED'}">Completed</option>
+							<option value="CANCELLED" th:selected="${currentStatus == 'CANCELLED'}">Cancelled</option>
+						</select>
+					</div>
+					<div class="col-md-2">
+						<label class="form-label fw-bold text-muted">Sort By</label>
+						<select name="sortBy" class="form-select">
+							<option value="bookingId" th:selected="${sortBy == 'bookingId'}">Booking ID</option>
+							<option value="eventDate" th:selected="${sortBy == 'eventDate'}">Start Date</option>
+							<option value="endDate" th:selected="${sortBy == 'endDate'}">End Date</option>
+							<option value="status" th:selected="${sortBy == 'status'}">Status</option>
+						</select>
+					</div>
+					<div class="col-md-2">
+						<label class="form-label fw-bold text-muted">Order</label>
+						<select name="sortDir" class="form-select">
+							<option value="desc" th:selected="${sortDir == 'desc'}">Descending</option>
+							<option value="asc" th:selected="${sortDir == 'asc'}">Ascending</option>
+						</select>
+					</div>
+					<div class="col-md-2">
+						<label class="form-label fw-bold text-muted">Page Size</label>
+						<select name="size" class="form-select">
+							<option value="5" th:selected="${size == 5}">5</option>
+							<option value="10" th:selected="${size == 10}">10</option>
+							<option value="20" th:selected="${size == 20}">20</option>
+							<option value="50" th:selected="${size == 50}">50</option>
+						</select>
+					</div>
+					<div class="col-md-12">
+						<button type="submit" class="btn btn-primary me-2"><i class="fas fa-search me-1"></i>Search</button>
+						<a th:href="@{/bookings}" class="btn btn-secondary"><i class="fas fa-redo me-1"></i>Reset</a>
+					</div>
+					<input type="hidden" name="page" value="0" />
+				</form>
+			</div>
 		</div>
 
 		<div class="card shadow border-0">
@@ -38,6 +74,7 @@
 						<thead class="bg-light text-primary">
 							<tr>
 								<th class="border-0">S.No</th>
+								<th class="border-0">Booking Id</th>
 								<th class="border-0">Venue</th>
 								<th class="border-0">Start Date</th>
 								<th class="border-0">End Date</th>
@@ -49,7 +86,8 @@
 						<tbody>
 							<tr th:each="booking, iterStat : ${bookings}">
 								<td class="fw-bold"
-									th:text="${(currentPage * 10) + iterStat.count}">1</td>
+									th:text="${(currentPage * (size != null ? size : 10)) + iterStat.count}">1</td>
+								<td th:text="${booking.bookingId}">Venue</td>	
 								<td th:text="${booking.venue.venueName}">Venue</td>
 								<td
 									th:text="${#temporals.format(booking.eventDate, 'yyyy-MM-dd')}">Start
@@ -94,27 +132,24 @@
 					</table>
 				</div>
 
-				<nav th:if="${totalPages > 1}" aria-label="Page navigation"
-					class="mt-4">
-					<ul class="pagination justify-content-center">
-						<li class="page-item"
-							th:classappend="${currentPage == 0} ? 'disabled'"><a
-							class="page-link"
-							th:href="@{/bookings(page=${currentPage - 1}, status=${currentStatus}, sort=${currentSort})}">Previous</a>
-						</li>
-						<li class="page-item"
-							th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-							th:classappend="${currentPage == i} ? 'active'"><a
-							class="page-link"
-							th:href="@{/bookings(page=${i}, status=${currentStatus}, sort=${currentSort})}"
-							th:text="${i + 1}">1</a></li>
-						<li class="page-item"
-							th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-							<a class="page-link"
-							th:href="@{/bookings(page=${currentPage + 1}, status=${currentStatus}, sort=${currentSort})}">Next</a>
-						</li>
-					</ul>
-				</nav>
+				<div class="d-flex justify-content-between align-items-center mt-4">
+					<div class="text-muted">
+						Showing <span th:text="${#lists.size(bookings)}">0</span> of <span th:text="${totalElements}">0</span> bookings
+					</div>
+					<nav th:if="${totalPages > 1}" aria-label="Page navigation">
+						<ul class="pagination justify-content-center mb-0">
+							<li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+								<a class="page-link" th:href="@{/bookings(page=${currentPage - 1}, size=${size}, sortBy=${sortBy}, sortDir=${sortDir}, status=${currentStatus}, search=${currentSearch})}">Previous</a>
+							</li>
+							<li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${currentPage == i} ? 'active'">
+								<a class="page-link" th:href="@{/bookings(page=${i}, size=${size}, sortBy=${sortBy}, sortDir=${sortDir}, status=${currentStatus}, search=${currentSearch})}" th:text="${i + 1}">1</a>
+							</li>
+							<li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+								<a class="page-link" th:href="@{/bookings(page=${currentPage + 1}, size=${size}, sortBy=${sortBy}, sortDir=${sortDir}, status=${currentStatus}, search=${currentSearch})}">Next</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
 			</div>
 		</div>
 
