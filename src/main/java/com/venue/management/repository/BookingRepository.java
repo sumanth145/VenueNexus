@@ -37,6 +37,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Page<Booking> findByVenue_VenueNameContainingIgnoreCase(String searchTerm, Pageable pageable);
     Page<Booking> findByUser_UsernameContainingIgnoreCase(String searchTerm, Pageable pageable);
     Page<Booking> findByStatusContainingIgnoreCase(String searchTerm, Pageable pageable);
-    Page<Booking> findByVenue_VenueNameContainingIgnoreCaseOrUser_UsernameContainingIgnoreCaseOrStatusContainingIgnoreCase(
+    Page<Booking>  findByVenue_VenueNameContainingIgnoreCaseOrUser_UsernameContainingIgnoreCaseOrStatusContainingIgnoreCase(
         String venueName, String username, String status, Pageable pageable);
 }

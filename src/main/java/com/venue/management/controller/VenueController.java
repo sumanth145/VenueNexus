@@ -227,36 +227,7 @@ public class VenueController {
         return "redirect:/venues/edit/" + id;
     }
 
-    /**
-     * Deletes a venue and its associated image file.
-     * 
-     * @param id The venue ID
-     * @param redirectAttributes The redirect attributes
-     * @return Redirect to venues list
-     */
-    @PostMapping("/delete/{id}")
-    public String deleteVenue(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        log.info("Deleting venue ID: {}", id);
-        
-        try {
-            Venue venue = venueService.getVenueById(id)
-                .orElseThrow(() -> new RuntimeException("Venue not found"));
-            
-            // Delete image file if exists
-            if (venue.getImagePath() != null && !venue.getImagePath().isEmpty()) {
-                log.debug("Deleting image file: {}", venue.getImagePath());
-                deleteImage(venue.getImagePath());
-            }
-            
-            venueService.deleteVenue(id);
-            redirectAttributes.addFlashAttribute("success", "Venue deleted successfully!");
-            log.info("Venue {} deleted successfully", id);
-        } catch (Exception e) {
-            log.error("Error deleting venue: {}", e.getMessage(), e);
-            redirectAttributes.addFlashAttribute("error", "Error deleting venue: " + e.getMessage());
-        }
-        return "redirect:/venues";
-    }
+
 
     /**
      * Saves an uploaded image file.
@@ -289,21 +260,4 @@ public class VenueController {
         return "/images/" + filename;
     }
 
-    /**
-     * Deletes an image file.
-     * 
-     * @param imagePath The relative path of the image to delete
-     */
-    private void deleteImage(String imagePath) {
-        try {
-            if (imagePath != null && !imagePath.isEmpty()) {
-                Path filePath = Paths.get("src/main/resources/static" + imagePath);
-                Files.deleteIfExists(filePath);
-                log.debug("Image deleted successfully: {}", imagePath);
-            }
-        } catch (IOException e) {
-            // Log error but don't fail the delete operation
-            log.error("Error deleting image file {}: {}", imagePath, e.getMessage(), e);
-        }
-    }
 }

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
  * @author Event Venue Management System
  * @version 1.0
  */
+
 public interface PaymentService {
     Page<Payment> getAllPayments(String status, String search, Pageable pageable);
     Page<Payment> getUserPayments(User user, String status, String search, Pageable pageable);

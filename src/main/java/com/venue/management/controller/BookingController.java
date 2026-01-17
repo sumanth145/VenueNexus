@@ -185,7 +185,7 @@ public class BookingController {
             
             bookingService.createBooking(booking);
             logger.info("Booking created successfully with ID: {}", booking.getBookingId());
-            return "redirect:/bookings";
+            return "redirect:/payments/pay/"+booking.getBookingId();
         } catch (Exception e) {
             logger.error("Error creating booking: {}", e.getMessage(), e);
             model.addAttribute("error", e.getMessage());
